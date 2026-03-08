@@ -11,6 +11,7 @@ interface OrderLineCustomFields {
 interface OrderLine {
   id: string;
   quantity: number;
+  linePrice: number;
   linePriceWithTax: number;
   customFields?: OrderLineCustomFields;
   productVariant: {
@@ -28,6 +29,7 @@ interface OrderLine {
 interface ActiveOrder {
   id: string;
   code: string;
+  subTotal: number;
   totalWithTax: number;
   totalQuantity: number;
   lines: OrderLine[];
@@ -43,7 +45,7 @@ interface CartContextType {
     variantId: string,
     quantity?: number,
     customFields?: { specialInstructions?: string; petPhotos?: string[] },
-  ) => Promise<void>;
+  ) => Promise<{ success: boolean; errorMessage?: string }>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeFromCart: (lineId: string) => Promise<void>;
   refreshCart: () => Promise<void>;
@@ -51,7 +53,8 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const VENDURE_API = process.env.NEXT_PUBLIC_VENDURE_API_URL || 'http://localhost:3000/shop-api';
+// Client-side calls go through the Next.js proxy so they work on any device
+const VENDURE_API = '/api/vendure';
 
 // Vendure uses a session token stored in a cookie or auth header
 let vendureToken: string | null = null;
@@ -77,14 +80,7 @@ export async function vendureMutation<T>(query: string, variables?: Record<strin
     });
   } catch (err) {
     console.warn('Fetch failed (Vendure API unreachable): ' + (err instanceof Error ? err.message : String(err)));
-    // Return a mock response object that safely passes through the rest of the function
-    // but triggers the "json.errors" handler below so it doesn't crash the React context.
-    return {
-      headers: { get: () => null },
-      json: async () => ({
-        errors: [{ message: 'Could not connect to the store API. Please check your connection.' }]
-      })
-    } as any as T;
+    throw new Error('Could not connect to the store API. Please check your connection.');
   }
 
   // Capture the session token from Vendure
@@ -197,14 +193,14 @@ const REMOVE_LINE_MUTATION = `
   }
 `;
 
-function extractOrder(data: Record<string, unknown>): { order: ActiveOrder | null; errorCode?: string } {
+function extractOrder(data: Record<string, unknown>): { order: ActiveOrder | null; errorCode?: string; errorMessage?: string } {
   const result = Object.values(data)[0] as Record<string, unknown> | null;
   if (!result) return { order: null };
   if ('errorCode' in result) {
     const code = (result.errorCode as string) || 'UNKNOWN';
     const msg = (result.message as string) || '';
     console.error(`Cart error [${code}]: ${msg}`, result);
-    return { order: null, errorCode: code };
+    return { order: null, errorCode: code, errorMessage: msg };
   }
   if ('id' in result) return { order: result as unknown as ActiveOrder };
   return { order: null };
@@ -249,7 +245,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } }
       `);
     } catch (e) {
-      // ignore — order may already be in AddingItems
+      // ignore. Order may already be in AddingItems
     }
   }, []);
 
@@ -258,7 +254,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       variantId: string,
       quantity = 1,
       customFields?: { specialInstructions?: string; petPhotos?: string[] },
-    ) => {
+    ): Promise<{ success: boolean; errorMessage?: string }> => {
       setIsLoading(true);
       const variables: Record<string, any> = {
         productVariantId: variantId,
@@ -296,15 +292,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (result.order) {
           setOrder(result.order);
-          setIsOpen(true); // Open drawer on add
+          setIsOpen(true);
+          // Await refresh to get fully-resolved relation fields (e.g. petPhotos)
+          // that the addItemToOrder mutation response may not include.
+          await refreshCart();
+          return { success: true };
         }
+
+        return { success: false, errorMessage: result.errorMessage || 'Something went wrong. Please try again.' };
       } catch (e) {
         console.error('Failed to add to cart:', e);
+        return { success: false, errorMessage: 'Something went wrong on our end. Please try again.' };
       } finally {
         setIsLoading(false);
       }
     },
-    [ensureAddingItemsState],
+    [ensureAddingItemsState, refreshCart],
   );
 
   const updateQuantity = useCallback(async (lineId: string, quantity: number) => {

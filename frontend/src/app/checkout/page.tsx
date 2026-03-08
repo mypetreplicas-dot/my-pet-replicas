@@ -60,7 +60,7 @@ function StripePaymentForm({ onSuccess, total }: { onSuccess: () => void; total:
             </div>
 
             {paymentError && (
-                <div className="p-4 rounded-xl bg-red-900/20 border border-red-800/30 text-red-400 text-sm">
+                <div className="p-4 rounded-xl shadow-[0_0_12px_rgba(239,68,68,0.15)] bg-red-900/20 text-red-400 text-sm">
                     {paymentError}
                 </div>
             )}
@@ -84,7 +84,7 @@ function StripePaymentForm({ onSuccess, total }: { onSuccess: () => void; total:
             </button>
 
             <p className="text-xs text-neutral-600 text-center">
-                Test mode — use card 4242 4242 4242 4242, any future exp, any CVC
+                Test mode. Use card 4242 4242 4242 4242, any future exp, any CVC
             </p>
         </form>
     );
@@ -342,7 +342,7 @@ export default function CheckoutPage() {
                     {/* Email confirmation */}
                     {form.emailAddress && (
                         <div
-                            className="rounded-xl bg-terra-600/10 border border-terra-600/20 p-4 flex items-start gap-3 mb-8"
+                            className="rounded-xl bg-terra-600/10 shadow-[0_0_16px_rgba(212,112,62,0.1)] p-5 flex items-start gap-4 mb-10"
                             style={{ animation: 'fade-up 0.5s ease-out 0.7s both' }}
                         >
                             <svg className="w-5 h-5 text-terra-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -370,7 +370,7 @@ export default function CheckoutPage() {
                                         </svg>
                                     ),
                                     title: 'Order Confirmed',
-                                    desc: 'Your order has been received and payment processed.',
+                                    desc: 'Your payment went through successfully. Thank you for your order!',
                                     active: true,
                                 },
                                 {
@@ -379,8 +379,8 @@ export default function CheckoutPage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
                                         </svg>
                                     ),
-                                    title: 'Crafting Begins',
-                                    desc: 'Our artists begin hand-sculpting your custom pet replica.',
+                                    title: 'I Start Painting',
+                                    desc: 'I\'ll begin hand-painting your replica. Takes 2-3 weeks.',
                                     active: false,
                                 },
                                 {
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                                         </svg>
                                     ),
                                     title: 'Shipped to You',
-                                    desc: 'Carefully packaged and shipped with tracking to your door.',
+                                    desc: 'Packed carefully and shipped with tracking.',
                                     active: false,
                                 },
                             ].map((step, i) => (
@@ -471,7 +471,7 @@ export default function CheckoutPage() {
                         </Link>
                         <Link
                             href="/product/custom-pet-replica"
-                            className="px-8 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold rounded-full transition-all border border-neutral-700/50 text-center"
+                            className="px-8 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold rounded-full transition-all shadow-lg text-center"
                         >
                             Create Another Replica
                         </Link>
@@ -492,7 +492,7 @@ export default function CheckoutPage() {
                         </svg>
                     </div>
                     <h1 className="text-2xl font-display font-bold text-white">Your cart is empty</h1>
-                    <p className="text-neutral-500 text-sm">Add a custom pet replica to get started.</p>
+                    <p className="text-neutral-500 text-sm">Start by choosing a replica. It only takes a couple of minutes.</p>
                     <Link
                         href="/product/custom-pet-replica"
                         className="inline-block px-8 py-3 bg-terra-600 hover:bg-terra-500 text-white font-semibold rounded-full transition-all"
@@ -540,7 +540,7 @@ export default function CheckoutPage() {
                     {/* Left: Form */}
                     <div className="lg:col-span-3">
                         {error && (
-                            <div className="mb-6 p-4 rounded-xl bg-red-900/20 border border-red-800/30 text-red-400 text-sm">
+                            <div className="mb-8 p-4 rounded-xl shadow-[0_0_12px_rgba(239,68,68,0.15)] bg-red-900/20 text-red-400 text-sm">
                                 {error}
                             </div>
                         )}
@@ -629,9 +629,9 @@ export default function CheckoutPage() {
                                                 return (
                                                     <label
                                                         key={method.id}
-                                                        className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${isSelected
-                                                            ? 'border-terra-500/50 bg-terra-600/10'
-                                                            : 'border-neutral-800/50 bg-neutral-800/20 hover:border-neutral-700/50'
+                                                        className={`flex items-center gap-4 p-5 rounded-xl cursor-pointer transition-all ${isSelected
+                                                            ? 'shadow-[0_0_16px_rgba(212,112,62,0.2)] bg-terra-600/10'
+                                                            : 'shadow-md bg-neutral-800/20 hover:shadow-lg'
                                                             }`}
                                                     >
                                                         <input
@@ -817,18 +817,18 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Trust signals */}
-                            <div className="mt-6 pt-5 border-t border-neutral-800/50 space-y-2.5">
+                            <div className="mt-8 pt-6 space-y-3">
                                 <div className="flex items-center gap-2 text-xs text-neutral-500">
                                     <svg className="w-4 h-4 text-terra-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                     </svg>
-                                    Powered by Stripe — secure 256-bit encryption
+                                    Powered by Stripe. Secure 256-bit encryption
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-neutral-500">
                                     <svg className="w-4 h-4 text-terra-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Handcrafted with care in San Antonio, TX
+                                    Hand-painted in San Antonio, TX
                                 </div>
                             </div>
                         </div>

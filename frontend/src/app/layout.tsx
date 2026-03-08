@@ -1,26 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
-import CartButton from "@/components/CartButton";
+import Header from "@/components/Header";
+// Hidden until post-deployment. Needs smoother animation & email integration
+// import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
-
 export const metadata: Metadata = {
-  title: "My Pet Replicas | Premium Custom Pet Figures — San Antonio, TX",
+  title: "My Pet Replicas | Custom Hand-Painted Pet Figures. San Antonio, TX",
   description:
-    "Museum-quality, hand-painted custom pet replicas starting at $150. Celebrate your pet or honor their memory with an heirloom keepsake. Handcrafted in San Antonio, TX.",
+    "Custom hand-painted pet replicas starting at $150. Each one is painted by a single artist in San Antonio, TX. Your pet, actually painted to look like them.",
   robots: {
     index: true,
     follow: true,
@@ -42,7 +38,7 @@ export default function RootLayout({
     "@type": "LocalBusiness",
     "name": "My Pet Replicas",
     "image": "https://mypetreplicas.com/images/replicas/_DSC3783.jpg",
-    "description": "Museum-quality, hand-painted custom pet replicas starting at $150. Heirloom keepsakes that capture your pet's unique personality. Handcrafted in San Antonio, TX.",
+    "description": "Custom hand-painted pet replicas starting at $150. Each one painted by a single artist in San Antonio, TX.",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "San Antonio",
@@ -55,7 +51,7 @@ export default function RootLayout({
       "longitude": -98.4936
     },
     "url": "https://mypetreplicas.com",
-    "telephone": "+1-555-PET-REPLICA",
+    "email": "mypetreplicas@gmail.com",
     "priceRange": "$$",
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -77,79 +73,85 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased bg-[var(--color-dark-main)] text-[var(--color-neutral-100)] selection:bg-terra-500/30`}
+        className={`${inter.variable} antialiased bg-[var(--color-dark-main)] text-[var(--color-neutral-100)] selection:bg-terra-500/30`}
       >
         <CartProvider>
           <div className="flex flex-col min-h-screen">
             {/* ── Header ── */}
-            <header className="fixed top-0 w-full z-50 bg-[var(--color-dark-main)]/80 backdrop-blur-lg">
-              <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2">
-                  <span className="font-display font-bold text-2xl tracking-tight text-white">
-                    MyPet<span className="text-terra-400">Replicas</span>
-                  </span>
-                </Link>
-
-
-
-                <div className="flex items-center gap-4">
-                  <CartButton />
-                  <Link
-                    href="/product/custom-pet-replica"
-                    className="text-sm font-semibold px-6 py-3 bg-terra-600 hover:bg-terra-500 text-white rounded-full transition-all shadow-[0_0_24px_rgba(212,112,62,0.25)] hover:shadow-[0_0_32px_rgba(212,112,62,0.4)]"
-                  >
-                    Start Creating
-                  </Link>
-                </div>
-              </div>
-            </header>
+            <Header />
 
             {/* ── Main ── */}
-            <main className="flex-grow pt-20">{children}</main>
+            <main className="flex-grow pt-24">{children}</main>
 
             {/* ── Footer ── */}
-            <footer className="mt-32 py-16 bg-[var(--color-dark-card)]">
+            <footer id="site-footer" className="py-16 md:py-20 bg-[var(--color-dark-card)]">
               <div className="max-w-6xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-                  <div className="max-w-sm">
+                {/* ── Main Footer Grid ── */}
+                <div className="flex flex-col md:flex-row justify-between gap-12 md:gap-8">
+                  {/* Column 1: Brand & NAP */}
+                  <div className="md:w-1/3">
                     <span className="font-display font-bold text-xl text-white">
                       MyPet<span className="text-terra-400">Replicas</span>
                     </span>
-                    <p className="mt-4 text-sm text-neutral-500 leading-relaxed">
-                      We make beautiful replicas of your pet. All of them are
-                      hand-painted and are made with love.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">
-                      Contact
-                    </h4>
-                    <ul className="space-y-3 text-sm text-neutral-400">
-                      <li>
-                        <a
-                          href="mailto:mypetreplicas@gmail.com"
-                          className="hover:text-white transition-colors"
-                        >
+                    <address className="not-italic mt-4 space-y-1.5 text-sm text-neutral-500 leading-relaxed">
+                      <p>San Antonio, TX</p>
+                      <p>
+                        <a href="mailto:mypetreplicas@gmail.com" className="hover:text-neutral-300 transition-colors">
                           mypetreplicas@gmail.com
                         </a>
-                      </li>
-                    </ul>
+                      </p>
+                    </address>
                   </div>
-                </div>
 
-                <div className="mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
+                  {/* Column 3: Trust & Privacy */}
+                  <div className="md:w-1/2 md:flex md:justify-end">
+                    <div className="max-w-md">
+                      <h4 className="text-xs font-semibold uppercase tracking-widest text-neutral-600 mb-5">
+                        Trust & Privacy
+                      </h4>
+                      <ul className="space-y-4">
+                        <li>
+                          <div className="flex items-center gap-2 text-sm text-terra-500 font-medium">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                          </div>
+                          <span className="text-xs text-neutral-400 mt-1 block">5-Star Rated Custom Artist on Etsy</span>
+                        </li>
+                        <li>
+                          <span className="text-sm text-neutral-500 leading-relaxed block">
+                            I will never share the reference photos you provide. If I'd like to post your finished replica online, I will always ask for your permission first.
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div> {/* This closes the grid grid-cols-1 md:grid-cols-3 div */}
+
+                {/* ── Bottom Bar ── */}
+                <div className="mt-16 pt-8 border-t border-neutral-800/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
                   <p>
-                    &copy; {new Date().getFullYear()} My Pet Replicas. All rights
-                    reserved.
+                    &copy; 2026 MyPetReplicas. All rights reserved.
                   </p>
-                  <p>Handcrafted in San Antonio, TX 🐾</p>
+                  <p>Hand-painted in San Antonio, TX</p>
                 </div>
               </div>
             </footer>
           </div>
 
-          {/* Cart Drawer (rendered outside layout flow) */}
+          {/* Cart Drawer (Exit Intent popup hidden until post-deployment) */}
           <CartDrawer />
         </CartProvider>
       </body>

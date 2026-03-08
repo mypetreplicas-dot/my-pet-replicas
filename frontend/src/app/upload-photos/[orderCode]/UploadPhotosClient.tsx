@@ -44,7 +44,7 @@ export default function UploadPhotosClient({
         return false;
       }
       if (file.size > maxSize) {
-        setError(`"${file.name}" exceeds the 10MB file size limit.`);
+        setError(`"${file.name}" is over 10MB. Please try a smaller version of this photo.`);
         return false;
       }
       return true;
@@ -53,7 +53,7 @@ export default function UploadPhotosClient({
     setUploadedFiles((prev) => {
       const combined = [...prev, ...newFiles];
       if (combined.length > maxFiles) {
-        setError(`You can upload up to ${maxFiles} photos.`);
+        setError(`You can include up to ${maxFiles} photos. I've kept the first ${maxFiles} you selected.`);
         return combined.slice(0, maxFiles);
       }
       return combined;
@@ -122,7 +122,7 @@ export default function UploadPhotosClient({
           </div>
           <h1 className="text-3xl font-display font-bold text-white mb-3">Photos Received!</h1>
           <p className="text-neutral-400 mb-8">
-            Thank you! We've received your pet photos and our artists will begin working on your custom replica.
+            Thank you so much! I&apos;ve got your photos and I&apos;ll get started on your replica soon. I&apos;ll reach out if I need anything else.
           </p>
           <a
             href="/"
@@ -139,21 +139,21 @@ export default function UploadPhotosClient({
     <div className="min-h-screen bg-neutral-950 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-block px-4 py-1.5 bg-terra-500/10 border border-terra-500/20 rounded-full mb-4">
+        <div className="text-center mb-16">
+          <div className="inline-block px-4 py-1.5 bg-terra-500/10 shadow-[0_0_12px_rgba(212,112,62,0.15)] rounded-full mb-6">
             <span className="text-sm text-terra-400 font-medium">Order {orderCode}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-3">
-            Upload Your Pet Photos
+            Send Me Your Pet&apos;s Photos
           </h1>
           <p className="text-neutral-400 text-lg">
-            Hi {customerName}! Please upload clear photos of your pet so our artists can create your custom replica.
+            Hey {customerName}! Upload clear photos so I can paint your replica. Multiple angles help.
           </p>
         </div>
 
         {/* Order Items */}
-        <div className="bg-neutral-900/50 rounded-xl border border-neutral-800 p-6 mb-8">
-          <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wide mb-4">
+        <div className="bg-neutral-900/50 rounded-xl shadow-lg p-8 mb-12">
+          <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wide mb-6">
             Items in This Order
           </h2>
           <div className="space-y-3">
@@ -167,8 +167,8 @@ export default function UploadPhotosClient({
         </div>
 
         {/* Upload Area */}
-        <div className="bg-neutral-900/50 rounded-xl border border-neutral-800 p-8 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-6">Upload Photos</h2>
+        <div className="bg-neutral-900/50 rounded-xl shadow-xl p-10 mb-10">
+          <h2 className="text-lg font-semibold text-white mb-8">Upload Photos</h2>
 
           <div
             onDragOver={(e) => {
@@ -178,8 +178,8 @@ export default function UploadPhotosClient({
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             className={`relative rounded-xl p-12 text-center transition-all cursor-pointer ${isDragging
-                ? 'bg-terra-900/30 ring-2 ring-terra-500/50'
-                : 'bg-neutral-800/50 hover:bg-neutral-800 border-2 border-dashed border-neutral-700'
+              ? 'bg-terra-900/30 ring-2 ring-terra-500/50'
+              : 'bg-neutral-800/30 hover:bg-neutral-800/60 shadow-inner'
               }`}
             onClick={() => document.getElementById('photo-upload-input')?.click()}
           >
@@ -206,7 +206,7 @@ export default function UploadPhotosClient({
                 <p className="text-base text-neutral-300 mb-1">
                   <span className="text-terra-400 font-semibold">Click to upload</span> or drag and drop
                 </p>
-                <p className="text-sm text-neutral-500">JPG, PNG, or WebP — max 10MB each (up to 10 photos)</p>
+                <p className="text-sm text-neutral-500">JPG, PNG, or WebP. Max 10MB each (up to 10 photos)</p>
               </div>
             </div>
           </div>
@@ -243,33 +243,33 @@ export default function UploadPhotosClient({
 
           {/* Error Message */}
           {error && (
-            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <div className="mt-6 p-4 bg-red-500/10 shadow-[0_0_12px_rgba(239,68,68,0.15)] rounded-lg">
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
         </div>
 
         {/* Tips */}
-        <div className="bg-terra-500/5 border border-terra-500/10 rounded-xl p-6 mb-8">
-          <h3 className="text-sm font-semibold text-terra-400 uppercase tracking-wide mb-3">Photo Tips</h3>
+        <div className="bg-terra-500/5 shadow-[0_0_24px_rgba(212,112,62,0.05)] rounded-xl p-8 mb-12">
+          <h3 className="text-sm font-semibold text-terra-400 uppercase tracking-wide mb-4">Photo Tips</h3>
           <ul className="space-y-2 text-sm text-neutral-400">
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 text-terra-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Clear, well-lit photos work best</span>
+              <span>Clear, well-lit photos are easiest to work with</span>
             </li>
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 text-terra-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Include multiple angles (front, side, and any unique markings)</span>
+              <span>Multiple angles help. Front, sides, any unique spots or markings</span>
             </li>
             <li className="flex items-start gap-2">
               <svg className="w-4 h-4 text-terra-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Close-ups of face and eyes help capture personality</span>
+              <span>Face close-ups let me get their expression right</span>
             </li>
           </ul>
         </div>
@@ -294,7 +294,7 @@ export default function UploadPhotosClient({
         </button>
 
         {/* Security Note */}
-        <p className="text-center text-xs text-neutral-600 mt-6">
+        <p className="text-center text-xs text-neutral-500 mt-6">
           <svg className="inline w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path
               strokeLinecap="round"
@@ -302,7 +302,7 @@ export default function UploadPhotosClient({
               d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
             />
           </svg>
-          Your photos are securely uploaded and only used to create your custom pet replica
+          Your photos are secure and only used to paint your replica
         </p>
       </div>
     </div>

@@ -8,7 +8,7 @@ import {
     Asset,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
-import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
+import { AssetServerPlugin, configureS3AssetStorage, SharpAssetPreviewStrategy } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
@@ -52,7 +52,7 @@ export const config: VendureConfig = {
         ? {
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            synchronize: true, // Auto-create schema on boot
+            synchronize: false, // Use migrations in production. Never synchronize live data
             ssl: {
                 rejectUnauthorized: false,
             },
@@ -103,6 +103,13 @@ export const config: VendureConfig = {
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
+            previewStrategy: new SharpAssetPreviewStrategy({
+                maxWidth: 1200,
+                maxHeight: 1200,
+                jpegOptions: { quality: 85, progressive: true },
+                webpOptions: { quality: 85 },
+                pngOptions: { quality: 90 },
+            }),
             // Only use S3/R2 in production
             ...(IS_DEV
                 ? {}

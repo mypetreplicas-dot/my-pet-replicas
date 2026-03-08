@@ -11,6 +11,7 @@ interface ProductConfiguratorProps {
 
 interface PetConfig {
     id: string;
+    petName: string;
     selectedOptions: Record<string, string>;
     uploadedFiles: File[];
     preferredPhotoIndex: number | null;
@@ -41,12 +42,12 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     // Handle case where all variants are disabled
     if (enabledVariants.length === 0) {
         return (
-            <div className="p-8 rounded-xl bg-neutral-800/50 border border-neutral-700 text-center">
+            <div className="p-10 rounded-xl shadow-[0_0_24px_rgba(0,0,0,0.2)] bg-neutral-800/50 text-center">
                 <p className="text-neutral-400 text-lg">
                     This product is currently unavailable.
                 </p>
                 <p className="text-neutral-500 text-sm mt-2">
-                    Please check back later or contact us for more information.
+                    Please check back soon, or <a href="mailto:mypetreplicas@gmail.com" className="text-terra-400 hover:text-terra-300 transition-colors">email me</a> and I&apos;ll let you know when it&apos;s back.
                 </p>
             </div>
         );
@@ -67,6 +68,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     const [pets, setPets] = useState<PetConfig[]>([
         {
             id: '1',
+            petName: '',
             selectedOptions: getDefaultSelections(),
             uploadedFiles: [],
             preferredPhotoIndex: null,
@@ -79,24 +81,21 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     const [isAdding, setIsAdding] = useState(false);
     const [added, setAdded] = useState(false);
     const [uploadProgress, setUploadProgress] = useState('');
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+    const [fileErrors, setFileErrors] = useState<Record<string, { message: string; previewUrl?: string }[]>>({});
+
+    // Clear error for a pet when they make changes
+    const clearError = (petId: string) => {
+        setValidationErrors(prev => {
+            const next = { ...prev };
+            delete next[petId];
+            return next;
+        });
+    };
 
     const groupLabels: Record<string, string> = {
         size: 'Select Size',
         base: 'Display Base',
-    };
-
-    // Add a new pet
-    const handleAddPet = () => {
-        const newPet: PetConfig = {
-            id: Date.now().toString(),
-            selectedOptions: getDefaultSelections(),
-            uploadedFiles: [],
-            preferredPhotoIndex: null,
-            specialInstructions: '',
-            skipImages: false,
-            isDragging: false,
-        };
-        setPets([...pets, newPet]);
     };
 
     // Remove a pet
@@ -113,6 +112,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 ? { ...pet, selectedOptions: { ...pet.selectedOptions, [groupCode]: optionCode } }
                 : pet
         ));
+        clearError(petId);
     };
 
     // Update pet field
@@ -120,6 +120,10 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         setPets(prev => prev.map(pet =>
             pet.id === petId ? { ...pet, [field]: value } : pet
         ));
+        // Clear validation error when user makes any change
+        if (['uploadedFiles', 'preferredPhotoIndex', 'skipImages'].includes(field)) {
+            clearError(petId);
+        }
     };
 
     // Find variant for a pet's selections
@@ -160,19 +164,39 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     };
 
     const handleAddToCart = async () => {
-        // Validate all pets
+        // Validate all pets. Stop at first error per pet, priority order
+        const errors: Record<string, string> = {};
         for (let i = 0; i < pets.length; i++) {
             const pet = pets[i];
-            if (!pet.skipImages && pet.uploadedFiles.length < 3) {
-                alert(`Please upload at least 3 photos for Pet ${i + 1}, or check "I'll add images later".`);
-                return;
+            const suffix = pets.length > 1 ? ` for Pet ${i + 1}` : '';
+
+            // 1. Variant must resolve
+            const variant = getVariantForPet(pet);
+            if (!variant) {
+                errors[pet.id] = `Please select all options before continuing${suffix}.`;
+                continue;
             }
-            // Require preferred photo selection if photos are uploaded
-            if (!pet.skipImages && pet.uploadedFiles.length > 0 && pet.preferredPhotoIndex === null) {
-                alert(`Please select your preferred photo for Pet ${i + 1} by clicking the star icon.`);
-                return;
+
+            // 2. Photos required (unless skipping)
+            if (!pet.skipImages && pet.uploadedFiles.length < 3) {
+                errors[pet.id] = `Upload at least 3 photos${suffix}, or check "I'll add images later".`;
+                continue;
+            }
+
+            // 3. Ref photo must be selected (guard against stale index from deleted photos)
+            if (!pet.skipImages && pet.uploadedFiles.length > 0) {
+                const poseIndex = pet.preferredPhotoIndex;
+                if (poseIndex === null || poseIndex >= pet.uploadedFiles.length) {
+                    errors[pet.id] = `Tap the ⭐ "Use" button to select a reference photo${suffix}.`;
+                    continue;
+                }
             }
         }
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
+        setValidationErrors({});
 
         setIsAdding(true);
 
@@ -181,13 +205,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
             for (let i = 0; i < pets.length; i++) {
                 const pet = pets[i];
                 let assetIds: string[] = [];
-                const variant = getVariantForPet(pet);
-
-                if (!variant) {
-                    alert(`Invalid configuration for Pet ${i + 1}`);
-                    setIsAdding(false);
-                    return;
-                }
+                const variant = getVariantForPet(pet)!;
 
 
 
@@ -202,15 +220,27 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 const isAdditionalPet = i > 0;
                 const discountPercent = getDiscountPercent(i);
                 const instructionParts: string[] = [];
+                if (pet.petName.trim()) instructionParts.push(`[Pet name: ${pet.petName.trim()}]`);
                 if (isAdditionalPet && discountPercent) instructionParts.push(`[Multi-pet ${discountPercent}% off]`);
                 if (pet.skipImages) instructionParts.push('[Photos pending]');
-                if (pet.preferredPhotoIndex !== null) instructionParts.push(`[Preferred pose: Photo ${pet.preferredPhotoIndex + 1}]`);
+                if (pet.preferredPhotoIndex !== null) {
+                    const starredAssetId = assetIds[pet.preferredPhotoIndex] || '';
+                    instructionParts.push(`[Reference photo: Photo ${pet.preferredPhotoIndex + 1}]`);
+                    if (starredAssetId) instructionParts.push(`[Reference asset: ${starredAssetId}]`);
+                }
                 if (pet.specialInstructions) instructionParts.push(pet.specialInstructions);
 
-                await addToCart(variant.id, 1, {
+                const result = await addToCart(variant.id, 1, {
                     specialInstructions: instructionParts.length > 0 ? instructionParts.join(' ') : undefined,
                     petPhotos: assetIds.length > 0 ? assetIds : undefined,
                 });
+
+                if (!result.success) {
+                    setUploadProgress('');
+                    setValidationErrors({ _global: result.errorMessage || 'Something went wrong. Please try again.' });
+                    setIsAdding(false);
+                    return;
+                }
             }
 
             setAdded(true);
@@ -219,7 +249,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         } catch (e) {
             console.error('Failed to add to cart:', e);
             setUploadProgress('');
-            alert('Something went wrong. Please try again.');
+            setValidationErrors({ _global: 'Something went wrong on our end. Please try again, or email me if the issue continues.' });
         } finally {
             setIsAdding(false);
         }
@@ -230,13 +260,15 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
             {pets.map((pet, petIndex) => {
                 const variant = getVariantForPet(pet);
                 const price = getPriceForPet(petIndex, variant);
-                const priceDisplay = price !== null ? price.toFixed(2) : '—';
+                const priceDisplay = price !== null
+                    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
+                    : '.';
                 const isAdditionalPet = petIndex > 0;
 
                 return (
                     <div
                         key={pet.id}
-                        className={`space-y-6 ${petIndex > 0 ? 'pt-10 border-t border-neutral-800' : ''}`}
+                        className={`space-y-8 ${petIndex > 0 ? 'pt-12 border-t border-neutral-800' : ''}`}
                     >
                         {/* Pet Header */}
                         {pets.length > 1 && (
@@ -263,10 +295,25 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                         {/* Price */}
                         {petIndex === 0 && (
                             <div>
-                                <span className="text-4xl font-display font-bold text-white">${priceDisplay}</span>
-                                <span className="ml-2 text-sm text-neutral-500">USD + tax</span>
+                                <span className="text-4xl font-display font-bold text-white">{priceDisplay}</span>
+                                <span className="ml-2 text-sm text-neutral-500">+ tax</span>
                             </div>
                         )}
+
+                        {/* Pet Name */}
+                        <div>
+                            <label htmlFor={`pet-name-${pet.id}`} className="block text-sm font-medium text-neutral-400 mb-3">
+                                Your Pet&apos;s Name
+                            </label>
+                            <input
+                                id={`pet-name-${pet.id}`}
+                                type="text"
+                                value={pet.petName}
+                                onChange={(e) => updatePetField(pet.id, 'petName', e.target.value)}
+                                placeholder="e.g. Buddy, Luna, Max..."
+                                className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 transition-all"
+                            />
+                        </div>
 
                         {/* Option Group Selectors */}
                         {optionGroups.map((group) => (
@@ -296,20 +343,10 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
 
                         {/* Photo Upload */}
                         <div>
-                            <div className="flex items-center justify-between mb-3">
-                                <label className="block text-sm font-medium text-neutral-400">
-                                    Upload Photos of Your Pet
-                                </label>
-                                <div className="text-xs text-terra-400 flex items-center gap-1 font-medium">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                    </svg>
-                                    Select Preferred Pose
-                                </div>
-                            </div>
-                            <p className="text-xs text-neutral-500 mb-5">
-                                Upload at least 3 photos from different angles. Click the <span className="text-terra-400 font-semibold">star</span> to mark your preferred pose.
-                            </p>
+                            <label className="block text-sm font-medium text-neutral-400 mb-4">
+                                Upload Photos of Your Pet
+                                <span className="text-neutral-600 ml-1">(at least 3)</span>
+                            </label>
 
                             <button
                                 type="button"
@@ -339,38 +376,46 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                             </button>
 
                             {!pet.skipImages ? (
-                                <div className="grid grid-cols-3 gap-3">
-                                    {[...Array(6)].map((_, index) => {
-                                        const hasPhoto = pet.uploadedFiles[index];
-                                        const isPreferred = pet.preferredPhotoIndex === index;
+                                <>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {/* Uploaded photo thumbnails */}
+                                        {pet.uploadedFiles.map((file, index) => {
+                                            const isPreferred = pet.preferredPhotoIndex === index;
+                                            return (
+                                                <div key={index} className="aspect-square relative rounded-lg overflow-hidden">
+                                                    {/* Photo Thumbnail */}
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt={`Pet photo ${index + 1}`}
+                                                        className="absolute inset-0 w-full h-full object-cover"
+                                                    />
 
-                                        return (
-                                            <div key={index} className="aspect-square relative rounded-lg overflow-hidden group">
-                                                {hasPhoto ? (
-                                                    <>
-                                                        {/* Photo Thumbnail */}
-                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                        <img
-                                                            src={URL.createObjectURL(hasPhoto)}
-                                                            alt={`Pet photo ${index + 1}`}
-                                                            className="absolute inset-0 w-full h-full object-cover"
-                                                        />
+                                                    {/* Preferred badge. Always visible on top-left */}
+                                                    {isPreferred && (
+                                                        <div className="absolute top-1.5 left-1.5 z-10 bg-terra-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                                                            Ref
+                                                        </div>
+                                                    )}
 
-                                                        {/* Star Button */}
+                                                    {/* Action buttons. Always visible */}
+                                                    <div className="absolute bottom-0 inset-x-0 flex z-10">
+                                                        {/* Star / Set as preferred */}
                                                         <button
                                                             type="button"
                                                             onClick={() => updatePetField(pet.id, 'preferredPhotoIndex', index)}
-                                                            className={`absolute top-2 right-2 z-10 transition-all ${isPreferred
-                                                                ? 'text-terra-400 scale-110 drop-shadow-[0_0_8px_rgba(212,112,62,0.8)]'
-                                                                : 'text-white/40 hover:text-terra-400'
+                                                            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-bold tracking-wide uppercase transition-colors ${isPreferred
+                                                                ? 'bg-terra-600 text-white'
+                                                                : 'bg-black/70 text-neutral-200 hover:bg-terra-600/80 hover:text-white active:bg-terra-600'
                                                                 }`}
                                                         >
-                                                            <svg className="w-6 h-6" fill={isPreferred ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isPreferred ? 0 : 2} viewBox="0 0 24 24">
+                                                            <svg className="w-4 h-4" fill={isPreferred ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isPreferred ? 0 : 2} viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                                             </svg>
+                                                            {isPreferred ? 'Ref' : 'Use'}
                                                         </button>
 
-                                                        {/* Remove Button */}
+                                                        {/* Remove */}
                                                         <button
                                                             type="button"
                                                             onClick={() => {
@@ -382,72 +427,142 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                                     updatePetField(pet.id, 'preferredPhotoIndex', pet.preferredPhotoIndex - 1);
                                                                 }
                                                             }}
-                                                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                            className="flex items-center justify-center px-3.5 py-2.5 bg-black/70 text-red-400 hover:bg-red-500/40 active:bg-red-500/60 transition-colors"
                                                         >
-                                                            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                             </svg>
                                                         </button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {/* Upload Button */}
-                                                        <input
-                                                            type="file"
-                                                            id={`pet-photo-${pet.id}-${index}`}
-                                                            accept="image/jpeg,image/png"
-                                                            className="hidden"
-                                                            onChange={(e) => {
-                                                                const files = e.target.files;
-                                                                if (files && files[0]) {
-                                                                    const validTypes = ['image/jpeg', 'image/png'];
-                                                                    const maxSize = 10 * 1024 * 1024;
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
 
-                                                                    if (!validTypes.includes(files[0].type)) {
-                                                                        alert('Please upload a JPG or PNG image');
-                                                                        return;
-                                                                    }
-                                                                    if (files[0].size > maxSize) {
-                                                                        alert('File size must be less than 10MB');
-                                                                        return;
-                                                                    }
+                                        {/* Add more button. Shown if under max (5 photos) */}
+                                        {pet.uploadedFiles.length < 5 && (
+                                            <div className={`relative rounded-lg overflow-hidden group ${pet.uploadedFiles.length === 0 ? 'col-span-3 aspect-[3/1] sm:col-span-1 sm:aspect-square' : 'aspect-square'}`}>
+                                                <input
+                                                    type="file"
+                                                    id={`pet-photo-${pet.id}-add`}
+                                                    accept="image/jpeg,image/png,image/heic,image/heif"
+                                                    multiple
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const fileList = e.target.files;
+                                                        if (!fileList || fileList.length === 0) return;
 
-                                                                    const newFiles = [...pet.uploadedFiles];
-                                                                    newFiles[index] = files[0];
-                                                                    updatePetField(pet.id, 'uploadedFiles', newFiles.filter(Boolean));
+                                                        const validTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif'];
+                                                        const maxSize = 10 * 1024 * 1024;
+                                                        const remaining = 5 - pet.uploadedFiles.length;
+                                                        const filesToAdd: File[] = [];
+                                                        const errors: { message: string; previewUrl?: string }[] = [];
 
-                                                                    // Auto-select first photo as preferred
-                                                                    if (pet.preferredPhotoIndex === null) {
-                                                                        updatePetField(pet.id, 'preferredPhotoIndex', index);
-                                                                    }
-                                                                }
-                                                                e.target.value = '';
-                                                            }}
-                                                        />
-                                                        <label
-                                                            htmlFor={`pet-photo-${pet.id}-${index}`}
-                                                            className="absolute inset-0 border border-dashed border-neutral-700 hover:border-terra-500/50 hover:bg-terra-500/5 rounded-lg transition-all cursor-pointer flex items-center justify-center bg-neutral-800/20"
-                                                        >
-                                                            <svg className="w-8 h-8 text-neutral-600 group-hover:text-terra-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                            </svg>
-                                                        </label>
-                                                    </>
-                                                )}
+                                                        for (let i = 0; i < Math.min(fileList.length, remaining); i++) {
+                                                            const file = fileList[i];
+                                                            if (!validTypes.includes(file.type)) {
+                                                                errors.push({ message: 'This file is not a JPG or PNG. Please upload a JPEG or PNG file.' });
+                                                                continue;
+                                                            }
+                                                            if (file.size > maxSize) {
+                                                                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                                                                errors.push({
+                                                                    message: `This photo is ${sizeMB}MB (max 10MB). Please reduce the file size and try again.`,
+                                                                    previewUrl: URL.createObjectURL(file),
+                                                                });
+                                                                continue;
+                                                            }
+                                                            filesToAdd.push(file);
+                                                        }
+                                                        setFileErrors(prev => errors.length > 0 ? { ...prev, [pet.id]: errors } : (() => { const next = { ...prev }; delete next[pet.id]; return next; })());
+
+                                                        if (filesToAdd.length > 0) {
+                                                            const newFiles = [...pet.uploadedFiles, ...filesToAdd];
+                                                            updatePetField(pet.id, 'uploadedFiles', newFiles);
+
+                                                            // Auto-select first photo as preferred
+                                                            if (pet.preferredPhotoIndex === null) {
+                                                                updatePetField(pet.id, 'preferredPhotoIndex', 0);
+                                                            }
+                                                        }
+                                                        e.target.value = '';
+                                                    }}
+                                                />
+                                                <label
+                                                    htmlFor={`pet-photo-${pet.id}-add`}
+                                                    className="absolute inset-0 hover:shadow-[0_0_16px_rgba(212,112,62,0.15)] hover:bg-terra-500/5 rounded-lg transition-all cursor-pointer flex flex-col items-center justify-center bg-neutral-800/30 shadow-inner gap-1.5"
+                                                >
+                                                    <svg className="w-8 h-8 text-neutral-600 group-hover:text-terra-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                    </svg>
+                                                    <span className="text-[10px] text-neutral-600 group-hover:text-neutral-400 transition-colors font-medium">
+                                                        {pet.uploadedFiles.length === 0 ? 'Add Photos' : 'Add More'}
+                                                    </span>
+                                                </label>
                                             </div>
-                                        );
-                                    })}
-                                </div>
+                                        )}
+                                    </div>
+
+                                    {/* Photo counter */}
+                                    {pet.uploadedFiles.length > 0 && (
+                                        <div className="flex items-center justify-between mt-3">
+                                            <p className={`text-xs font-medium ${pet.uploadedFiles.length >= 3 ? 'text-green-400' : 'text-neutral-500'
+                                                }`}>
+                                                {pet.uploadedFiles.length} of 3 min
+                                                {pet.uploadedFiles.length >= 3 && ' ✔'}
+                                            </p>
+                                            {pet.preferredPhotoIndex !== null ? (
+                                                <p className="text-xs text-terra-400 font-medium">
+                                                    Ref photo selected ✔
+                                                </p>
+                                            ) : pet.uploadedFiles.length >= 1 ? (
+                                                <p className="text-xs text-amber-400 font-medium">
+                                                    Select a reference photo ↑
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                    )}
+
+                                    {/* File validation errors (wrong format / too large) */}
+                                    {fileErrors[pet.id] && fileErrors[pet.id].length > 0 && (
+                                        <div className="mt-3 space-y-2">
+                                            {fileErrors[pet.id].map((err, idx) => (
+                                                <div key={idx} className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                                    {err.previewUrl && (
+                                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                                        <img
+                                                            src={err.previewUrl}
+                                                            alt="Rejected photo"
+                                                            className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                                                        />
+                                                    )}
+                                                    <p className="text-xs text-red-300 leading-relaxed">
+                                                        {err.message}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
                             ) : (
-                                <div className="flex items-center gap-3 p-4 bg-terra-500/10 border border-terra-500/20 rounded-xl">
+                                <div className="flex items-center gap-4 p-5 bg-terra-500/10 shadow-[0_0_12px_rgba(212,112,62,0.15)] rounded-xl">
                                     <div className="flex-shrink-0 w-8 h-8 bg-terra-600/20 rounded-full flex items-center justify-center">
                                         <svg className="w-4 h-4 text-terra-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
                                     <p className="text-sm text-neutral-300">
-                                        Got it! We'll email you immediately after your order so you can securely send us your pet's photos.
+                                        Got it. I&apos;ll email you right after checkout so you can send photos then.
                                     </p>
+                                </div>
+                            )}
+
+                            {/* Inline validation error */}
+                            {validationErrors[pet.id] && (
+                                <div className="mt-4 flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                    <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                                    </svg>
+                                    <p className="text-sm text-red-300">{validationErrors[pet.id]}</p>
                                 </div>
                             )}
                         </div>
@@ -463,39 +578,31 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                 rows={3}
                                 value={pet.specialInstructions}
                                 onChange={(e) => updatePetField(pet.id, 'specialInstructions', e.target.value)}
-                                placeholder="Any specific details about your pet's markings, pose preferences, or nameplate text..."
+                                placeholder="Specific markings, pose, nameplate text, whatever you want me to know..."
                                 className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 resize-none transition-all"
                             />
                         </div>
 
-                        {/* Add Another Pet button (only after first pet's instructions) */}
-                        {/* 
-                        petIndex === pets.length - 1 && (
-                            <div className="pt-4">
-                                <button
-                                    onClick={handleAddPet}
-                                    className="w-full py-4 px-8 rounded-full text-base font-semibold transition-all bg-neutral-800 hover:bg-neutral-700 text-white border-2 border-terra-600/30 hover:border-terra-600/50"
-                                >
-                                    <span className="flex items-center justify-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                        Add Another Pet <span className="text-terra-400">(save up to 20%)</span>
-                                    </span>
-                                </button>
-                            </div>
-                        )
-                        */}
                     </div>
                 );
             })}
+
+            {/* Global error */}
+            {validationErrors._global && (
+                <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <p className="text-sm text-red-300">{validationErrors._global}</p>
+                </div>
+            )}
 
             {/* CTA: "Create My Pet Replica" */}
             <div className="pt-4">
                 <button
                     onClick={handleAddToCart}
                     disabled={isAdding}
-                    className={`w-full py-4 px-8 rounded-full text-lg font-semibold transition-all ${added
+                    className={`w-full py-4 px-8 min-h-[48px] rounded-full text-lg font-semibold transition-all ${added
                         ? 'bg-terra-700 text-white'
                         : 'bg-terra-600 hover:bg-terra-500 text-white shadow-[0_0_32px_rgba(212,112,62,0.3)] hover:shadow-[0_0_48px_rgba(212,112,62,0.5)]'
                         } disabled:opacity-70 disabled:cursor-not-allowed`}
@@ -516,7 +623,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                             Added to Cart
                         </span>
                     ) : (
-                        `Add to Cart →`
+                        'Commission My Replica →'
                     )}
                 </button>
             </div>
@@ -543,22 +650,6 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 </span>
             </div>
 
-            {/* Subtle pricing info at bottom */}
-            {/* 
-            pets.length > 1 && (
-                <div className="mt-6 pt-6 border-t border-neutral-800/50">
-                    <p className="text-xs text-neutral-600 mb-3">
-                        <span className="font-medium text-neutral-500">Multi-pet pricing:</span> Each additional pet receives a progressive discount
-                    </p>
-                    <div className="grid grid-cols-2 gap-3 text-xs text-neutral-500">
-                        <div>Pet 1: Full price</div>
-                        <div>Pet 2: 7% off</div>
-                        <div>Pet 3: 13% off</div>
-                        <div>Pet 4+: 20% off</div>
-                    </div>
-                </div>
-            )
-            */}
         </div>
     );
 }

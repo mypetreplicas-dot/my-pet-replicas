@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: var(--font-inter);
-  --font-display: var(--font-playfair);
+  --font-display: 'Merriweather', serif;
 
   /* ── Rich Terracotta Brand Color ── */
   --color-terra-50: #fdf5f0;

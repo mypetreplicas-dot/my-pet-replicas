@@ -149,10 +149,10 @@ async function seed() {
 
     // Map: [sizeCode, baseCode] → { sku, price }
     const variantDefs = [
-        { sizeCode: '4-inch', baseCode: 'no-base', sku: 'PET-4IN-NOBASE', price: 15000, name: '4 Inch — No Base' },
-        { sizeCode: '4-inch', baseCode: 'with-base', sku: 'PET-4IN-BASE', price: 17500, name: '4 Inch — With Base' },
-        { sizeCode: '5-inch', baseCode: 'no-base', sku: 'PET-5IN-NOBASE', price: 18500, name: '5 Inch — No Base' },
-        { sizeCode: '5-inch', baseCode: 'with-base', sku: 'PET-5IN-BASE', price: 21500, name: '5 Inch — With Base' },
+        { sizeCode: '4-inch', baseCode: 'no-base', sku: 'PET-4IN-NOBASE', price: 15000, name: '4 Inch. No Base' },
+        { sizeCode: '4-inch', baseCode: 'with-base', sku: 'PET-4IN-BASE', price: 17500, name: '4 Inch. With Base' },
+        { sizeCode: '5-inch', baseCode: 'no-base', sku: 'PET-5IN-NOBASE', price: 18500, name: '5 Inch. No Base' },
+        { sizeCode: '5-inch', baseCode: 'with-base', sku: 'PET-5IN-BASE', price: 21500, name: '5 Inch. With Base' },
     ];
 
     const variantInputs = variantDefs.map((v) => {
@@ -177,7 +177,7 @@ async function seed() {
     );
 
     for (const v of variantData.createProductVariants) {
-        console.log(`  ✓ Variant: ${v.name} — $${(v.price / 100).toFixed(2)} (sku: ${v.sku})`);
+        console.log(`  ✓ Variant: ${v.name}. $${(v.price / 100).toFixed(2)} (sku: ${v.sku})`);
     }
 
     console.log('\n✅ Seed completed! Single product with 4 variants created successfully.');

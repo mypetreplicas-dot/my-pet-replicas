@@ -57,7 +57,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     </div>
                     <p className="text-sm text-neutral-500 line-clamp-2 leading-relaxed">
                         {product.description ||
-                            'Beautifully hand-crafted replica of your pet, painted to perfection.'}
+                            'Hand-painted replica of your pet, made to look like them.'}
                     </p>
 
                     <div className="pt-4 flex items-center gap-2 text-sm font-medium text-terra-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

@@ -1,7 +1,25 @@
-export const VENDURE_SHOP_API = process.env.NEXT_PUBLIC_VENDURE_API_URL || 'http://localhost:3000/shop-api';
+export const VENDURE_SHOP_API = process.env.NEXT_PUBLIC_VENDURE_API_URL || 'http://localhost:3021/shop-api';
+
+/** Client-side calls go through the Next.js proxy so they work on any device (phones can't reach localhost) */
+const VENDURE_CLIENT_API = '/api/vendure';
+
+/** Rewrite a Vendure asset URL to go through the Next.js proxy so it works on any device */
+export function getProxiedAssetUrl(vendureUrl: string): string {
+  try {
+    const url = new URL(vendureUrl);
+    // Extract everything after /assets/
+    const assetsIndex = url.pathname.indexOf('/assets/');
+    if (assetsIndex === -1) return vendureUrl;
+    const assetPath = url.pathname.slice(assetsIndex + '/assets/'.length);
+    return `/api/assets/${assetPath}${url.search}`;
+  } catch {
+    return vendureUrl;
+  }
+}
 
 export async function queryVendure<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const res = await fetch(VENDURE_SHOP_API, {
+  const apiUrl = typeof window !== 'undefined' ? VENDURE_CLIENT_API : VENDURE_SHOP_API;
+  const res = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -13,10 +31,20 @@ export async function queryVendure<T>(query: string, variables?: Record<string, 
     next: { revalidate: 0 } // Bypass Next.js cache
   });
 
+  if (!res.ok) {
+    console.error(`Vendure API responded with ${res.status}: ${res.statusText}`);
+    throw new Error(`Vendure API error: ${res.status}`);
+  }
+
   const json = await res.json();
   if (json.errors) {
     console.error('Vendure GraphQL Errors:', json.errors);
     throw new Error('Failed to fetch from Vendure API');
+  }
+
+  if (!json.data) {
+    console.error('Vendure API returned no data:', json);
+    throw new Error('Vendure API returned no data');
   }
 
   return json.data as T;
@@ -150,7 +178,7 @@ export async function uploadPetPhotos(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(VENDURE_SHOP_API, {
+  const res = await fetch(VENDURE_CLIENT_API, {
     method: 'POST',
     headers,
     body: formData,

@@ -97,7 +97,7 @@ export default async function UploadPhotosPage({ params }: PageProps) {
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Order Not Found</h1>
           <p className="text-neutral-400 mb-6">
-            We couldn't find an order with code <span className="font-mono text-terra-400">{orderCode}</span>.
+            Can&apos;t find that order code. Double-check <span className="font-mono text-terra-400">{orderCode}</span> and try again.
           </p>
           <a
             href="/"
@@ -127,9 +127,9 @@ export default async function UploadPhotosPage({ params }: PageProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">All Photos Received</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">All Set</h1>
           <p className="text-neutral-400 mb-6">
-            We already have all the photos we need for order <span className="font-mono text-terra-400">{orderCode}</span>. Thank you!
+            I already have your photos for order <span className="font-mono text-terra-400">{orderCode}</span>. You&apos;re good!
           </p>
           <a
             href="/"

@@ -1,14 +1,42 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { queryVendure, GET_PRODUCT_BY_SLUG_QUERY, getProxiedAssetUrl, type GetProductBySlugResponse } from '@/lib/vendure';
 
 export default function CartDrawer() {
-    const { order, isOpen, isLoading, closeCart, updateQuantity, removeFromCart } = useCart();
+    const { order, isOpen, isLoading, closeCart, addToCart, removeFromCart } = useCart();
+    const [isAddingRush, setIsAddingRush] = useState(false);
 
-    const rawSubTotal = order ? (order as any).subTotal : 0;
-    const total = (typeof rawSubTotal === 'number' && !isNaN(rawSubTotal)) ? (rawSubTotal / 100).toFixed(2) : '0.00';
-    const lines = order?.lines || [];
+    const total = order ? (order.subTotal / 100).toFixed(2) : '0.00';
+    const allLines = order?.lines || [];
+
+    // Separate rush order lines from regular product lines
+    const productLines = allLines.filter((line) => line.productVariant.product.slug !== 'rush-order');
+    const rushLine = allLines.find((line) => line.productVariant.product.slug === 'rush-order');
+    const rushTotal = rushLine ? rushLine.linePrice : 0;
+    const rushUnitPrice = rushLine ? (rushLine.productVariant.price || 0) : 0;
+
+    const handleToggleRush = async () => {
+        setIsAddingRush(true);
+        try {
+            if (rushLine) {
+                // Remove rush order
+                await removeFromCart(rushLine.id);
+            } else {
+                // Add rush order with quantity = number of figures
+                const rushData = await queryVendure<GetProductBySlugResponse>(GET_PRODUCT_BY_SLUG_QUERY, { slug: 'rush-order' });
+                const rushVariantId = rushData.product?.variants[0]?.id;
+                if (!rushVariantId) return;
+                await addToCart(rushVariantId, productLines.length);
+            }
+        } catch (e) {
+            console.error('Failed to toggle rush order:', e);
+        } finally {
+            setIsAddingRush(false);
+        }
+    };
 
     return (
         <div className={`${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`} {...(!isOpen ? { inert: true } : {})}>
@@ -42,110 +70,143 @@ export default function CartDrawer() {
 
                 <div className="h-px bg-neutral-800/50" />
 
-                {/* Cart Items */}
+                {/* Cart Items (product lines only. no rush orders here) */}
                 <div className="flex-1 overflow-y-auto px-6 py-6">
-                    {lines.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-center">
-                            <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center mb-4">
-                                <svg className="w-8 h-8 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                                </svg>
+                    {allLines.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                            <div className="w-20 h-20 rounded-full bg-neutral-800/80 flex items-center justify-center mb-6">
+                                <span className="text-4xl">🐾</span>
                             </div>
-                            <p className="text-neutral-500 text-sm mb-6">Your cart is empty</p>
-                            <button
+                            <p className="text-neutral-400 text-base font-medium mb-2">Your cart is empty</p>
+                            <p className="text-neutral-500 text-sm mb-8 max-w-[240px]">
+                                Commission a hand-painted replica of your best friend.
+                            </p>
+                            <Link
+                                href="/product/custom-pet-replica"
                                 onClick={closeCart}
-                                className="text-sm font-medium text-terra-400 hover:text-terra-300 transition-colors"
+                                className="px-6 py-3 min-h-[48px] bg-terra-600 hover:bg-terra-500 text-white text-sm font-semibold rounded-full transition-all shadow-[0_0_24px_rgba(212,112,62,0.25)] hover:shadow-[0_0_32px_rgba(212,112,62,0.4)] flex items-center justify-center"
                             >
-                                Continue Shopping →
-                            </button>
+                                Start Customizing Your Replica
+                            </Link>
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            {lines.map((line) => (
-                                <div key={line.id} className="flex gap-4">
-                                    {/* Thumbnail */}
-                                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-neutral-800 shrink-0">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={
-                                                line.productVariant.product.featuredAsset?.preview ||
-                                                '/images/replicas/_DSC3783.jpg'
-                                            }
-                                            alt={line.productVariant.product.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
+                            {productLines.map((line) => {
+                                const instructions = line.customFields?.specialInstructions || '';
+                                const photos = line.customFields?.petPhotos;
+                                const nameMatch = instructions.match(/\[Pet name: (.+?)\]/);
+                                const petName = nameMatch ? nameMatch[1] : null;
+                                const discountMatch = instructions.match(/\[Multi-pet (\d+)% off\]/);
+                                const price = (line.linePrice / 100).toFixed(2);
 
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <Link
-                                            href={`/product/${line.productVariant.product.slug}`}
-                                            className="text-sm font-medium text-white hover:text-terra-300 transition-colors line-clamp-1"
-                                            onClick={closeCart}
-                                        >
-                                            {line.productVariant.product.name}
-                                        </Link>
-                                        <p className="text-xs text-neutral-500 mt-0.5">
-                                            {line.productVariant.name}
-                                        </p>
+                                // Resolve the starred reference photo thumbnail
+                                let thumbnailSrc: string;
+                                if (photos && photos.length > 0) {
+                                    // First try to match by asset ID (reliable, order-independent)
+                                    const assetMatch = instructions.match(/\[Reference asset: (\S+)\]/);
+                                    const starred = assetMatch ? photos.find((p) => p.id === assetMatch[1]) : null;
+                                    if (starred) {
+                                        thumbnailSrc = getProxiedAssetUrl(starred.preview);
+                                    } else {
+                                        // Fallback: match by photo index (for older orders)
+                                        const poseMatch = instructions.match(/\[(?:Reference photo|Preferred pose): Photo (\d+)\]/);
+                                        const poseIndex = poseMatch ? parseInt(poseMatch[1], 10) - 1 : 0;
+                                        const photo = photos[poseIndex] || photos[0];
+                                        thumbnailSrc = getProxiedAssetUrl(photo.preview);
+                                    }
+                                } else {
+                                    thumbnailSrc = line.productVariant.product.featuredAsset?.preview
+                                        ? getProxiedAssetUrl(line.productVariant.product.featuredAsset.preview)
+                                        : '/images/replicas/_DSC3783.jpg';
+                                }
 
-                                        {/* Price with multi-pet discount indicator */}
-                                        {(() => {
-                                            const instructions = ((line as any).customFields?.specialInstructions || '');
-                                            const discountMatch = instructions.match(/\[Multi-pet (\d+)% off\]/);
-                                            return discountMatch ? (
+                                return (
+                                    <div key={line.id} className="flex gap-4">
+                                        {/* Thumbnail — customer's starred reference photo */}
+                                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-neutral-800 shrink-0">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={thumbnailSrc}
+                                                alt={line.productVariant.product.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <Link
+                                                href={`/product/${line.productVariant.product.slug}`}
+                                                className="text-sm font-medium text-white hover:text-terra-300 transition-colors line-clamp-1"
+                                                onClick={closeCart}
+                                            >
+                                                {petName ? `${petName}'s Replica` : line.productVariant.product.name}
+                                            </Link>
+                                            <p className="text-xs text-neutral-500 mt-0.5">
+                                                {line.productVariant.name}
+                                            </p>
+
+                                            {/* Price with multi-pet discount indicator */}
+                                            {discountMatch ? (
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <p className="text-sm font-medium text-terra-400">
-                                                        ${(((line as any).linePrice || 0) / 100).toFixed(2)}
-                                                    </p>
+                                                    <p className="text-sm font-medium text-terra-400">${price}</p>
                                                     <span className="text-xs font-semibold text-terra-400 bg-terra-500/10 px-2 py-0.5 rounded-full">
                                                         {discountMatch[1]}% OFF
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <p className="text-sm text-neutral-300 mt-1">
-                                                    ${(((line as any).linePrice || 0) / 100).toFixed(2)}
-                                                </p>
-                                            );
-                                        })()}
+                                                <p className="text-sm text-neutral-300 mt-1">${price}</p>
+                                            )}
 
-                                        {/* Quantity controls */}
-                                        <div className="flex items-center gap-3 mt-2">
-                                            <button
-                                                onClick={() => updateQuantity(line.id, line.quantity - 1)}
-                                                disabled={isLoading || line.quantity <= 1}
-                                                className="w-7 h-7 rounded-lg bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 flex items-center justify-center text-sm transition-colors disabled:opacity-40"
-                                            >
-                                                −
-                                            </button>
-                                            <span className="text-sm text-neutral-300 w-4 text-center">
-                                                {line.quantity}
-                                            </span>
-                                            <button
-                                                onClick={() => updateQuantity(line.id, line.quantity + 1)}
-                                                disabled={isLoading}
-                                                className="w-7 h-7 rounded-lg bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 flex items-center justify-center text-sm transition-colors disabled:opacity-40"
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                onClick={() => removeFromCart(line.id)}
-                                                disabled={isLoading}
-                                                className="ml-auto text-xs text-neutral-600 hover:text-red-400 transition-colors"
-                                            >
-                                                Remove
-                                            </button>
+                                            {/* Remove button */}
+                                            <div className="flex items-center mt-2">
+                                                <button
+                                                    onClick={() => removeFromCart(line.id)}
+                                                    disabled={isLoading}
+                                                    className="text-xs text-neutral-600 hover:text-red-400 transition-colors"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                {lines.length > 0 && (
+                {allLines.length > 0 && (
                     <div className="px-6 py-6 bg-[var(--color-dark-elevated)]">
+                        {/* Rush order toggle */}
+                        {productLines.length > 0 && (
+                            <button
+                                onClick={handleToggleRush}
+                                disabled={isAddingRush || isLoading}
+                                className={`w-full mb-4 flex items-center gap-3 py-3 px-4 rounded-lg transition-all text-left disabled:opacity-50 ${rushLine
+                                    ? 'bg-terra-500/10 border border-terra-500/30'
+                                    : 'border border-terra-500/20 hover:bg-terra-500/10'
+                                    }`}
+                            >
+                                <svg className="w-4 h-4 text-terra-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                <div className="flex-grow">
+                                    <span className="text-xs font-medium text-terra-400">
+                                        {isAddingRush ? (rushLine ? 'Removing...' : 'Adding...') : rushLine ? 'Rush Order Added' : 'Add Rush Order'}
+                                    </span>
+                                    <p className="text-[10px] text-neutral-500 mt-0.5">
+                                        {rushUnitPrice > 0 ? `+$${(rushUnitPrice / 100).toFixed(2)}/figure · ` : ''}Priority queue &middot; Ships faster
+                                    </p>
+                                </div>
+                                {rushLine && (
+                                    <span className="text-xs font-semibold text-terra-400 flex-shrink-0">
+                                        +${(rushTotal / 100).toFixed(2)}
+                                    </span>
+                                )}
+                            </button>
+                        )}
+
                         <div className="flex justify-between items-center mb-6">
                             <span className="text-sm text-neutral-500">Subtotal</span>
                             <span className="text-lg font-display font-bold text-white">${total}</span>
@@ -161,7 +222,7 @@ export default function CartDrawer() {
                             onClick={closeCart}
                             className="block w-full mt-3 text-center text-sm text-neutral-500 hover:text-white transition-colors py-2"
                         >
-                            Continue Shopping
+                            Keep Browsing
                         </button>
                     </div>
                 )}
