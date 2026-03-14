@@ -53,7 +53,7 @@ export const config: VendureConfig = {
         ? {
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            synchronize: false, // Use migrations in production. Never synchronize live data
+            synchronize: true, // TODO: set back to false after first successful deploy
             ssl: {
                 rejectUnauthorized: false,
             },
