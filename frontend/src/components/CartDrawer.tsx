@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { queryVendure, GET_PRODUCT_BY_SLUG_QUERY, getProxiedAssetUrl, type GetProductBySlugResponse } from '@/lib/vendure';
 
 export default function CartDrawer() {
-    const { order, isOpen, isLoading, closeCart, addToCart, removeFromCart } = useCart();
+    const { order, isOpen, isLoading, closeCart, addToCart, updateQuantity, removeFromCart } = useCart();
     const [isAddingRush, setIsAddingRush] = useState(false);
 
     const total = order ? (order.subTotal / 100).toFixed(2) : '0.00';
@@ -17,6 +17,27 @@ export default function CartDrawer() {
     const rushLine = allLines.find((line) => line.productVariant.product.slug === 'rush-order');
     const rushTotal = rushLine ? rushLine.linePrice : 0;
     const rushUnitPrice = rushLine ? (rushLine.productVariant.price || 0) : 0;
+
+    // Auto-sync rush order quantity whenever product line count changes
+    const syncingRush = useRef(false);
+    useEffect(() => {
+        if (!rushLine || syncingRush.current || isLoading) return;
+        if (rushLine.quantity === productLines.length && productLines.length > 0) return;
+        syncingRush.current = true;
+        (async () => {
+            try {
+                if (productLines.length > 0) {
+                    await updateQuantity(rushLine.id, productLines.length);
+                } else {
+                    await removeFromCart(rushLine.id);
+                }
+            } catch (e) {
+                console.error('Failed to sync rush quantity:', e);
+            } finally {
+                syncingRush.current = false;
+            }
+        })();
+    }, [productLines.length, rushLine, isLoading, updateQuantity, removeFromCart]);
 
     const handleToggleRush = async () => {
         setIsAddingRush(true);
@@ -223,6 +244,17 @@ export default function CartDrawer() {
                             className="block w-full mt-3 text-center text-sm text-neutral-500 hover:text-white transition-colors py-2"
                         >
                             Keep Browsing
+                        </button>
+                        <button
+                            onClick={async () => {
+                                for (const line of allLines) {
+                                    await removeFromCart(line.id);
+                                }
+                            }}
+                            disabled={isLoading}
+                            className="block w-full mt-1 text-center text-xs text-neutral-600 hover:text-red-400 transition-colors py-2 disabled:opacity-50"
+                        >
+                            Clear Cart
                         </button>
                     </div>
                 )}

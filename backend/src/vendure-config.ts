@@ -19,6 +19,7 @@ import path from 'path';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 const serverPort = +process.env.PORT || 3000;
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3020';
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -27,7 +28,7 @@ export const config: VendureConfig = {
         shopApiPath: 'shop-api',
         trustProxy: IS_DEV ? false : 1,
         cors: {
-            origin: IS_DEV ? ['http://localhost:3020', 'http://localhost:5173'] : true,
+            origin: IS_DEV ? ['http://localhost:3020', 'http://localhost:5173'] : [frontendUrl],
             credentials: true,
         },
         // The following options are useful in development mode,
@@ -144,9 +145,9 @@ export const config: VendureConfig = {
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
                         fromAddress: '"My Pet Replicas" <noreply@sales.mypetreplicas.com>',
-                        verifyEmailAddressUrl: 'http://localhost:3020/verify',
-                        passwordResetUrl: 'http://localhost:3020/password-reset',
-                        changeEmailAddressUrl: 'http://localhost:3020/verify-email-address-change',
+                        verifyEmailAddressUrl: `${frontendUrl}/verify`,
+                        passwordResetUrl: `${frontendUrl}/password-reset`,
+                        changeEmailAddressUrl: `${frontendUrl}/verify-email-address-change`,
                     },
                     transport: {
                         type: 'smtp',
@@ -167,9 +168,9 @@ export const config: VendureConfig = {
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
                         fromAddress: '"My Pet Replicas" <noreply@sales.mypetreplicas.com>',
-                        verifyEmailAddressUrl: 'http://localhost:3020/verify',
-                        passwordResetUrl: 'http://localhost:3020/password-reset',
-                        changeEmailAddressUrl: 'http://localhost:3020/verify-email-address-change',
+                        verifyEmailAddressUrl: `${frontendUrl}/verify`,
+                        passwordResetUrl: `${frontendUrl}/password-reset`,
+                        changeEmailAddressUrl: `${frontendUrl}/verify-email-address-change`,
                     },
                 }
         ),

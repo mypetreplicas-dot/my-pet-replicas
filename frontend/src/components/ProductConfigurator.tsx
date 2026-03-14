@@ -220,6 +220,8 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 const isAdditionalPet = i > 0;
                 const discountPercent = getDiscountPercent(i);
                 const instructionParts: string[] = [];
+                // Unique line ID prevents Vendure from merging lines with the same variant
+                instructionParts.push(`[Line: ${Date.now()}-${i}]`);
                 if (pet.petName.trim()) instructionParts.push(`[Pet name: ${pet.petName.trim()}]`);
                 if (isAdditionalPet && discountPercent) instructionParts.push(`[Multi-pet ${discountPercent}% off]`);
                 if (pet.skipImages) instructionParts.push('[Photos pending]');
