@@ -115,7 +115,7 @@ export const config: VendureConfig = {
             ...(IS_DEV
                 ? {}
                 : {
-                    assetUrlPrefix: process.env.R2_PUBLIC_URL,
+                    assetUrlPrefix: (process.env.R2_PUBLIC_URL || '').replace(/\/?$/, '/'),
                     storageStrategyFactory: configureS3AssetStorage({
                         bucket: process.env.R2_BUCKET_NAME || '',
                         credentials: {
