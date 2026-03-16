@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import type { Product, ProductVariant, OptionGroup } from '@/lib/vendure';
 import { uploadPetPhotos, getEnabledVariants } from '@/lib/vendure';
 import { useCart, getVendureToken } from '@/context/CartContext';
@@ -77,6 +77,30 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
             isDragging: false,
         }
     ]);
+
+    // Convert uploaded photos to sRGB data URLs to prevent Chrome HDR compositing glitch
+    const previewUrls = useRef<Map<File, string>>(new Map());
+    const [, setPreviewTick] = useState(0);
+    const getPreviewUrl = useCallback((file: File) => {
+        const existing = previewUrls.current.get(file);
+        if (existing) return existing;
+        const blobUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                previewUrls.current.set(file, canvas.toDataURL('image/jpeg', 0.85));
+                setPreviewTick(t => t + 1);
+            }
+            URL.revokeObjectURL(blobUrl);
+        };
+        img.src = blobUrl;
+        return blobUrl;
+    }, []);
 
     const [isAdding, setIsAdding] = useState(false);
     const [added, setAdded] = useState(false);
@@ -395,10 +419,9 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                     {/* Photo Thumbnail */}
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img
-                                                        src={URL.createObjectURL(file)}
+                                                        src={getPreviewUrl(file)}
                                                         alt={`Pet photo ${index + 1}`}
                                                         className="absolute inset-0 w-full h-full object-cover"
-                                                        style={{ filter: 'brightness(1)' }}
                                                     />
 
                                                     {/* Preferred badge. Always visible on top-left */}

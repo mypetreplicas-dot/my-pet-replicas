@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 interface OrderLine {
   id: string;
@@ -27,6 +27,30 @@ export default function UploadPhotosClient({
   customerName,
   orderLines,
 }: UploadPhotosClientProps) {
+  // Convert uploaded photos to sRGB data URLs to prevent Chrome HDR compositing glitch
+  const previewUrls = useRef<Map<File, string>>(new Map());
+  const [, setPreviewTick] = useState(0);
+  const getPreviewUrl = useCallback((file: File) => {
+    const existing = previewUrls.current.get(file);
+    if (existing) return existing;
+    const blobUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        previewUrls.current.set(file, canvas.toDataURL('image/jpeg', 0.85));
+        setPreviewTick(t => t + 1);
+      }
+      URL.revokeObjectURL(blobUrl);
+    };
+    img.src = blobUrl;
+    return blobUrl;
+  }, []);
+
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -220,10 +244,9 @@ export default function UploadPhotosClient({
                   <div key={i} className="relative group aspect-square rounded-lg overflow-hidden bg-neutral-800">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={getPreviewUrl(file)}
                       alt={`Pet photo ${i + 1}`}
                       className="w-full h-full object-cover"
-                      style={{ filter: 'brightness(1)' }}
                     />
                     <button
                       onClick={(e) => {
