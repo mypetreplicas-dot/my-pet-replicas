@@ -1,24 +1,26 @@
-{{> header title="Forgotten password reset" }}
+{{> header title="Forgotten Password Reset" }}
 
-<mj-section background-color="#fafafa">
+<mj-section background-color="#0c0c0e" padding="30px 40px">
     <mj-column>
-        <mj-text color="#525252">
+        <mj-text color="#d4d4d8" font-size="15px">
             Someone requested a new password for your account.
         </mj-text>
 
-        <mj-button font-family="Helvetica"
-                   background-color="#f45e43"
+        <mj-button font-family="'Outfit', 'Helvetica Neue', Arial, sans-serif"
+                   background-color="#d4703e"
                    color="white"
+                   font-size="14px"
+                   font-weight="600"
+                   border-radius="8px"
+                   padding="12px 32px"
                    href="{{ passwordResetUrl }}?token={{ passwordResetToken }}">
-            Reset password
+            Reset Password
         </mj-button>
 
-        <mj-text color="#525252">
-        If you didn't make this request then you can safely ignore this email - nothing has been changed on your account.
+        <mj-text color="#a1a1aa" font-size="14px">
+            If you didn't make this request then you can safely ignore this email - nothing has been changed on your account.
         </mj-text>
-
     </mj-column>
 </mj-section>
-
 
 {{> footer }}
