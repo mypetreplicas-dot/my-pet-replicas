@@ -53,7 +53,7 @@ export const config: VendureConfig = {
         ? {
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            synchronize: true, // TODO: set back to false after first successful deploy
+            synchronize: false,
             ssl: {
                 rejectUnauthorized: false,
             },
