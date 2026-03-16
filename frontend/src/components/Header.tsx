@@ -22,13 +22,6 @@ export default function Header() {
                     </span>
                 </Link>
 
-                {/* Center/Desktop Navigation (Subtle, sans-serif, medium weight) */}
-                <nav className="hidden md:flex items-center gap-8">
-                    <a href="mailto:mypetreplicas@gmail.com" className="text-[16px] font-medium text-neutral-400 hover:text-white transition-colors min-h-[44px] flex items-center">
-                        Contact Artist
-                    </a>
-                </nav>
-
                 {/* Right: CTA, Cart, Hamburger */}
                 <div className="flex items-center gap-1 md:gap-4 z-50">
                     <div className="hidden md:block">
@@ -66,16 +59,6 @@ export default function Header() {
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
                 <div className="absolute top-[88px] left-0 w-full h-screen bg-[var(--color-dark-main)] z-40 md:hidden flex flex-col p-6 shadow-inner">
-                    <nav className="flex flex-col gap-2 mb-8 mt-4">
-                        <a
-                            href="mailto:mypetreplicas@gmail.com"
-                            className="text-[18px] font-medium text-neutral-300 hover:text-white min-h-[44px] flex items-center border-b border-neutral-800/50 pb-4 pt-2"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            Contact Artist
-                        </a>
-                    </nav>
-
                     <Link
                         href="/product/custom-pet-replica"
                         className="w-full px-6 py-4 min-h-[44px] bg-terra-600 hover:bg-terra-500 text-white text-[18px] font-semibold rounded-full transition-colors flex items-center justify-center shadow-[0_4px_12px_hsla(22,74%,54%,0.3)]"

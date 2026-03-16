@@ -124,6 +124,7 @@ export default function CheckoutPage() {
         firstName: '',
         lastName: '',
         emailAddress: '',
+        confirmEmail: '',
         streetLine1: '',
         streetLine2: '',
         city: '',
@@ -142,6 +143,12 @@ export default function CheckoutPage() {
         e.preventDefault();
         setIsSubmitting(true);
         setError('');
+
+        if (form.emailAddress !== form.confirmEmail) {
+            setError('Email addresses do not match. Please make sure both emails are the same.');
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
             // 1. Set customer for order
@@ -563,6 +570,12 @@ export default function CheckoutPage() {
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Email</label>
                                     <input type="email" required value={form.emailAddress} onChange={(e) => updateField('emailAddress', e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                        placeholder="you@example.com" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-neutral-500 mb-1.5">Confirm Email</label>
+                                    <input type="email" required value={form.confirmEmail} onChange={(e) => updateField('confirmEmail', e.target.value)}
                                         className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="you@example.com" />
                                 </div>
