@@ -160,7 +160,7 @@ export default async function ProductPage({ params }: PageProps) {
                             },
                             {
                                 q: 'How long does it take?',
-                                a: 'About 1-2 weeks from order to delivery. Each replica is hand-painted to order, so I take the time to get every detail right.',
+                                a: 'About a week from order to delivery. Each replica is hand-painted to order, so I take the time to get every detail right.',
                             },
                             {
                                 q: 'Can you capture specific markings or colors?',

@@ -380,7 +380,7 @@ export default function CheckoutPage() {
                                         </svg>
                                     ),
                                     title: 'I Start Painting',
-                                    desc: 'I\'ll begin hand-painting your replica. Takes 2-3 weeks.',
+                                    desc: 'I\'ll begin hand-painting your replica. Takes about a week.',
                                     active: false,
                                 },
                                 {

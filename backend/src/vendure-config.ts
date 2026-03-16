@@ -13,6 +13,7 @@ import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
 import { PetPhotoUploadPlugin } from './plugins/pet-photo-upload.plugin';
+import { ResendEmailSender } from './plugins/resend-email-sender';
 import { multiPetDiscountAction } from './promotions/multi-pet-discount';
 import 'dotenv/config';
 import path from 'path';
@@ -149,15 +150,8 @@ export const config: VendureConfig = {
                         passwordResetUrl: `${frontendUrl}/password-reset`,
                         changeEmailAddressUrl: `${frontendUrl}/verify-email-address-change`,
                     },
-                    transport: {
-                        type: 'smtp',
-                        host: 'smtp.resend.com',
-                        port: 587,
-                        auth: {
-                            user: 'resend',
-                            pass: process.env.RESEND_API_KEY,
-                        },
-                    },
+                    transport: { type: 'none' as const },
+                    emailSender: new ResendEmailSender(),
                 }
                 : {
                     devMode: true,
