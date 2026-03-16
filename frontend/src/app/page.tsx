@@ -31,7 +31,7 @@ export default function HomePage() {
           <img
             src="/images/replicas/_DSC3783.jpg"
             alt="A hand-painted custom pet replica sitting beside a framed photo"
-            className="w-full h-full object-cover opacity-50 mix-blend-luminosity"
+            className="w-full h-full object-cover opacity-40 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark-main)] via-[var(--color-dark-main)]/70 to-black/30" />
         </div>

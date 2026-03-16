@@ -46,7 +46,7 @@ export function ExpandableImage({ src, alt }: { src: string; alt: string }) {
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm cursor-zoom-out"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 cursor-zoom-out"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}

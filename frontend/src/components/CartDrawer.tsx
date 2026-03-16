@@ -63,7 +63,7 @@ export default function CartDrawer() {
         <div className={`${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`} {...(!isOpen ? { inert: true } : {})}>
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 ${isOpen ? 'z-50 opacity-100' : '-z-10 opacity-0 invisible'}`}
+                className={`fixed inset-0 bg-black/70 transition-all duration-300 ${isOpen ? 'z-50 opacity-100' : '-z-10 opacity-0 invisible'}`}
                 onClick={closeCart}
             />
 

@@ -40,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     />
                     {/* Option count badge */}
                     {enabledVariants.length > 1 && (
-                        <span className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm text-xs text-neutral-300 px-3 py-1 rounded-full">
+                        <span className="absolute top-4 right-4 bg-black/80 text-xs text-neutral-300 px-3 py-1 rounded-full">
                             {enabledVariants.length} options
                         </span>
                     )}

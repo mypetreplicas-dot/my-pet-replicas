@@ -8,7 +8,7 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-[var(--color-dark-main)]/95 backdrop-blur-md shadow-[0_2px_4px_hsla(0,0%,0%,0.2),_0_8px_16px_hsla(0,0%,0%,0.4)]">
+        <header className="fixed top-0 w-full z-50 bg-[var(--color-dark-main)] shadow-[0_2px_4px_hsla(0,0%,0%,0.2),_0_8px_16px_hsla(0,0%,0%,0.4)]">
             <div className="max-w-[1200px] mx-auto px-6 h-[88px] flex items-center justify-between">
 
                 {/* Left: Logo (Serif font-display) */}
