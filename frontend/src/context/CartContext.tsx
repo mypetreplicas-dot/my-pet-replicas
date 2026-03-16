@@ -265,9 +265,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         variables.customFields = {
           specialInstructions: customFields.specialInstructions,
         };
-        if (customFields.petPhotos) {
-          variables.customFields.petPhotosIds = customFields.petPhotos;
-        }
       }
       try {
         let data = await vendureMutation<Record<string, unknown>>(ADD_TO_ORDER_MUTATION, variables);
@@ -291,10 +288,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
 
         if (result.order) {
+          // Link pet photos via Admin API (Shop API can't set relation fields)
+          if (customFields?.petPhotos?.length) {
+            const previousLineIds = new Set(order?.lines.map((l) => l.id) || []);
+            const newLine = result.order.lines.find((l: { id: string }) => !previousLineIds.has(l.id));
+            if (newLine) {
+              try {
+                await fetch('/api/link-photos', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    orderLineId: newLine.id,
+                    petPhotosIds: customFields.petPhotos,
+                  }),
+                });
+              } catch (e) {
+                console.error('Failed to link photos:', e);
+              }
+            }
+          }
           setOrder(result.order);
           setIsOpen(true);
-          // Await refresh to get fully-resolved relation fields (e.g. petPhotos)
-          // that the addItemToOrder mutation response may not include.
           await refreshCart();
           return { success: true };
         }
