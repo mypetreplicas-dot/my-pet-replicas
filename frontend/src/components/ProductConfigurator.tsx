@@ -209,11 +209,13 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
 
 
 
+                let assetPreviews: string[] = [];
                 if (!pet.skipImages && pet.uploadedFiles.length > 0) {
                     setUploadProgress(`Uploading photos for Pet ${i + 1}...`);
                     const token = getVendureToken();
                     const assets = await uploadPetPhotos(pet.uploadedFiles, token);
                     assetIds = assets.map((a) => a.id);
+                    assetPreviews = assets.map((a) => a.preview);
                 }
 
                 setUploadProgress(`Adding Pet ${i + 1} to cart...`);
@@ -231,6 +233,9 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                     if (starredAssetId) instructionParts.push(`[Reference asset: ${starredAssetId}]`);
                 }
                 if (pet.specialInstructions) instructionParts.push(pet.specialInstructions);
+                if (assetPreviews.length > 0) {
+                    instructionParts.push(`[Photo URLs: ${assetPreviews.join(' , ')}]`);
+                }
 
                 const result = await addToCart(variant.id, 1, {
                     specialInstructions: instructionParts.length > 0 ? instructionParts.join(' ') : undefined,
