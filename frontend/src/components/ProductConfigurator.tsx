@@ -234,11 +234,13 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 }
                 if (pet.specialInstructions) instructionParts.push(pet.specialInstructions);
                 if (assetPreviews.length > 0) {
-                    instructionParts.push(`[Photo URLs: ${assetPreviews.join(' , ')}]`);
+                    assetPreviews.forEach((url, idx) => {
+                        instructionParts.push(`[Photo ${idx + 1}: ${url}]`);
+                    });
                 }
 
                 const result = await addToCart(variant.id, 1, {
-                    specialInstructions: instructionParts.length > 0 ? instructionParts.join(' ') : undefined,
+                    specialInstructions: instructionParts.length > 0 ? instructionParts.join('\n') : undefined,
                     petPhotos: assetIds.length > 0 ? assetIds : undefined,
                 });
 
