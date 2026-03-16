@@ -14,6 +14,7 @@ import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
 import { PetPhotoUploadPlugin } from './plugins/pet-photo-upload.plugin';
 import { ResendEmailSender } from './plugins/resend-email-sender';
+import { shippingConfirmationHandler } from './plugins/shipping-confirmation-handler';
 import { multiPetDiscountAction } from './promotions/multi-pet-discount';
 import 'dotenv/config';
 import path from 'path';
@@ -142,7 +143,7 @@ export const config: VendureConfig = {
                 ? {
                     outputPath: path.join(__dirname, '../static/email/test-emails'),
                     route: 'mailbox',
-                    handlers: defaultEmailHandlers,
+                    handlers: [...defaultEmailHandlers, shippingConfirmationHandler],
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
                         fromAddress: '"My Pet Replicas" <noreply@sales.mypetreplicas.com>',
@@ -157,7 +158,7 @@ export const config: VendureConfig = {
                     devMode: true,
                     outputPath: path.join(__dirname, '../static/email/test-emails'),
                     route: 'mailbox',
-                    handlers: defaultEmailHandlers,
+                    handlers: [...defaultEmailHandlers, shippingConfirmationHandler],
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
                         fromAddress: '"My Pet Replicas" <noreply@sales.mypetreplicas.com>',

@@ -83,9 +83,6 @@ function StripePaymentForm({ onSuccess, total }: { onSuccess: () => void; total:
                 )}
             </button>
 
-            <p className="text-xs text-neutral-600 text-center">
-                Test mode. Use card 4242 4242 4242 4242, any future exp, any CVC
-            </p>
         </form>
     );
 }
@@ -578,6 +575,9 @@ export default function CheckoutPage() {
                                     <input type="email" required value={form.confirmEmail} onChange={(e) => updateField('confirmEmail', e.target.value)}
                                         className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="you@example.com" />
+                                    {form.confirmEmail && form.emailAddress !== form.confirmEmail && (
+                                        <p className="text-red-400 text-xs mt-1.5">Email addresses do not match.</p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Phone</label>

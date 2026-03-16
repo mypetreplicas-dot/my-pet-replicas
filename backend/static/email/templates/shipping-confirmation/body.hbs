@@ -1,0 +1,128 @@
+{{> header title="Your Order Has Shipped!" }}
+
+<mj-raw>
+    <style type="text/css">
+    .callout-large > div {
+        text-align: center !important;
+        color: #f4f4f5 !important;
+        font-size: 13px !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0;
+    }
+    .callout-small > div {
+        text-align: center !important;
+        color: #d4d4d8 !important;
+        font-size: 15px !important;
+        padding: 0;
+    }
+    ul.address {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        color: #a1a1aa;
+    }
+    ul.address li {
+        padding: 2px 0;
+    }
+    tr.order-row td {
+        border-bottom: 1px solid #27272a;
+        color: #d4d4d8;
+        padding: 12px 6px;
+    }
+    tr.order-row td:last-child {
+        text-align: right;
+    }
+    </style>
+</mj-raw>
+
+<!-- Greeting -->
+<mj-section background-color="#0c0c0e" padding="30px 40px 10px">
+    <mj-column>
+        <mj-text color="#f4f4f5" font-size="22px" font-weight="700" font-family="'Outfit', 'Helvetica Neue', Arial, sans-serif">
+            Your replica is on its way!
+        </mj-text>
+        <mj-text color="#a1a1aa" font-size="15px" padding-top="4px">
+            Hi {{ order.customer.firstName }}, great news — your custom pet replica has shipped and is headed your way.
+        </mj-text>
+    </mj-column>
+</mj-section>
+
+<!-- Order Info Cards -->
+<mj-section background-color="#131316" padding="20px 20px" border-radius="8px">
+    <mj-column>
+        <mj-text css-class="callout-large"><strong>Order Code</strong></mj-text>
+        <mj-text css-class="callout-small" color="#d4703e" font-weight="600">{{ order.code }}</mj-text>
+    </mj-column>
+    <mj-column>
+        <mj-text css-class="callout-large"><strong>Order Date</strong></mj-text>
+        <mj-text css-class="callout-small">{{ formatDate order.orderPlacedAt }}</mj-text>
+    </mj-column>
+</mj-section>
+
+<!-- Shipping Address -->
+<mj-section background-color="#0c0c0e" padding="24px 40px">
+    <mj-column>
+        <mj-text color="#d4703e" font-size="13px" font-weight="600" text-transform="uppercase" letter-spacing="0.5px" padding-bottom="4px">
+            Shipping To
+        </mj-text>
+        <mj-text color="#d4d4d8" font-size="15px">
+            {{#with order.shippingAddress }}
+                <strong style="color: #f4f4f5;">{{ fullName }}</strong>
+                <ul class="address">
+                    {{#if company}}<li>{{ company }}</li>{{/if}}
+                    {{#if streetLine1}}<li>{{ streetLine1 }}</li>{{/if}}
+                    {{#if streetLine2}}<li>{{ streetLine2 }}</li>{{/if}}
+                    {{#if city}}<li>{{ city }}{{#if province}}, {{ province }}{{/if}} {{#if postalCode}}{{ postalCode }}{{/if}}</li>{{/if}}
+                    {{#if country}}<li>{{ country }}</li>{{/if}}
+                    {{#if phoneNumber}}<li>{{ phoneNumber }}</li>{{/if}}
+                </ul>
+            {{/with}}
+        </mj-text>
+    </mj-column>
+</mj-section>
+
+<!-- Divider -->
+<mj-section background-color="#0c0c0e" padding="0 40px">
+    <mj-column>
+        <mj-divider border-color="#27272a" border-width="1px" />
+    </mj-column>
+</mj-section>
+
+<!-- Order Items -->
+<mj-section background-color="#0c0c0e" padding="16px 40px">
+    <mj-column>
+        <mj-text color="#d4703e" font-size="13px" font-weight="600" text-transform="uppercase" letter-spacing="0.5px" padding-bottom="8px">
+            Items Shipped
+        </mj-text>
+        <mj-table cellpadding="6px" color="#d4d4d8">
+            {{#each order.lines }}
+                <tr class="order-row">
+                    <td style="width: 56px;">
+                        {{#if featuredAsset.preview}}
+                        <img alt="{{ productVariant.name }}"
+                             style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;"
+                             src="{{ featuredAsset.preview }}?w=50&h=50" />
+                        {{/if}}
+                    </td>
+                    <td style="padding-left: 10px;">{{ quantity }} x {{ productVariant.name }}</td>
+                </tr>
+            {{/each}}
+        </mj-table>
+    </mj-column>
+</mj-section>
+
+<!-- What's Next -->
+<mj-section background-color="#1a1a1e" padding="24px 40px" border-radius="8px">
+    <mj-column>
+        <mj-text color="#f4f4f5" font-size="16px" font-weight="600" font-family="'Outfit', 'Helvetica Neue', Arial, sans-serif" padding-bottom="8px">
+            What to expect
+        </mj-text>
+        <mj-text color="#a1a1aa" font-size="14px" line-height="1.7">
+            Your package should arrive within a few business days depending on your location. If you have any questions, just reply to this email — we're happy to help!
+        </mj-text>
+    </mj-column>
+</mj-section>
+
+{{> footer }}
