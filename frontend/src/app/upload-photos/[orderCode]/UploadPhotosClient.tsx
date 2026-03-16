@@ -223,6 +223,7 @@ export default function UploadPhotosClient({
                       src={URL.createObjectURL(file)}
                       alt={`Pet photo ${i + 1}`}
                       className="w-full h-full object-cover"
+                      style={{ filter: 'brightness(1)' }}
                     />
                     <button
                       onClick={(e) => {

@@ -398,6 +398,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                         src={URL.createObjectURL(file)}
                                                         alt={`Pet photo ${index + 1}`}
                                                         className="absolute inset-0 w-full h-full object-cover"
+                                                        style={{ filter: 'brightness(1)' }}
                                                     />
 
                                                     {/* Preferred badge. Always visible on top-left */}
@@ -542,6 +543,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                             src={err.previewUrl}
                                                             alt="Rejected photo"
                                                             className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                                                            style={{ filter: 'brightness(1)' }}
                                                         />
                                                     )}
                                                     <p className="text-xs text-red-300 leading-relaxed">
