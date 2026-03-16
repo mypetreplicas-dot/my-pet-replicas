@@ -141,33 +141,6 @@
     </mj-column>
 </mj-section>
 
-<!-- Upload Photos (conditional) -->
-{{#each order.lines }}
-    {{#if (contains customFields.specialInstructions "[Photos pending]")}}
-<mj-section background-color="#1a1a1e" padding="24px 40px" border-radius="8px">
-    <mj-column>
-        <mj-text color="#d4703e" font-size="16px" font-weight="600" font-family="'Outfit', 'Helvetica Neue', Arial, sans-serif" padding-bottom="8px">
-            📸 Upload Your Pet Photos
-        </mj-text>
-        <mj-text color="#a1a1aa" font-size="14px" line-height="1.7" padding-bottom="16px">
-            We need photos of your pet to begin creating your custom replica. Please upload clear, well-lit photos from multiple angles.
-        </mj-text>
-        <mj-button
-            background-color="#d4703e"
-            color="#ffffff"
-            font-size="14px"
-            font-weight="600"
-            border-radius="8px"
-            padding="12px 32px"
-            href="http://localhost:3020/upload-photos/{{ ../order.code }}"
-        >
-            Upload Photos Now →
-        </mj-button>
-    </mj-column>
-</mj-section>
-    {{/if}}
-{{/each}}
-
 <!-- What's Next -->
 <mj-section background-color="#1a1a1e" padding="24px 40px" border-radius="8px">
     <mj-column>
