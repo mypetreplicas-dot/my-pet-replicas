@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
 
 // ── Types ──
 interface OrderLineCustomFields {
@@ -249,6 +249,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Track known line IDs across sequential addToCart calls (ref survives between loop iterations)
+  const knownLineIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    knownLineIdsRef.current = new Set(order?.lines.map((l) => l.id) || []);
+  }, [order]);
+
   const addToCart = useCallback(
     async (
       variantId: string,
@@ -290,9 +296,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (result.order) {
           // Link pet photos via Admin API (Shop API can't set relation fields)
           if (customFields?.petPhotos?.length) {
-            const previousLineIds = new Set(order?.lines.map((l) => l.id) || []);
-            const newLine = result.order.lines.find((l: { id: string }) => !previousLineIds.has(l.id));
+            const newLine = result.order.lines.find((l: { id: string }) => !knownLineIdsRef.current.has(l.id));
             if (newLine) {
+              // Immediately mark as known so the next addToCart call in a loop doesn't pick it again
+              knownLineIdsRef.current.add(newLine.id);
               try {
                 await fetch('/api/link-photos', {
                   method: 'POST',
