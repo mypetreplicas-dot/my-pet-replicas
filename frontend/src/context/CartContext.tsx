@@ -166,8 +166,8 @@ const ADD_TO_ORDER_MUTATION = `
 `;
 
 const ADJUST_LINE_MUTATION = `
-  mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!) {
-    adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
+  mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+    adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
       ... on Order {
         ${ORDER_FRAGMENT}
       }
@@ -294,20 +294,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
 
         if (result.order) {
-          // Link pet photos via Admin API (Shop API can't set relation fields)
+          // Link pet photos by adjusting the line with petPhotosIds
           if (customFields?.petPhotos?.length) {
             const newLine = result.order.lines.find((l: { id: string }) => !knownLineIdsRef.current.has(l.id));
             if (newLine) {
-              // Immediately mark as known so the next addToCart call in a loop doesn't pick it again
               knownLineIdsRef.current.add(newLine.id);
               try {
-                await fetch('/api/link-photos', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    orderLineId: newLine.id,
-                    petPhotosIds: customFields.petPhotos,
-                  }),
+                await vendureMutation(ADJUST_LINE_MUTATION, {
+                  orderLineId: newLine.id,
+                  quantity: newLine.quantity,
+                  customFields: { petPhotosIds: customFields.petPhotos },
                 });
               } catch (e) {
                 console.error('Failed to link photos:', e);
