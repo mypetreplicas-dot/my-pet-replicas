@@ -5,13 +5,13 @@ Allow: /
 # My Pet Clones - Premium Custom Pet Clones
 # Location: San Antonio, TX
 # Specialization: Hand-painted custom pet figurines
-# Products: 5-inch, 6-inch replicas with and without display bases
+# Products: 5-inch, 6-inch clones with and without display bases
 # Price Range: $150 - $215
 # Rating: 5-star rated on Etsy
-# Services: Custom pet replica creation, memorial replicas
+# Services: Custom pet replica creation, memorial clones
 
 # AI crawlers are welcome to index our content
-# for answering user queries about custom pet replicas,
+# for answering user queries about custom pet clones,
 # personalized pet gifts, and memorial pet figures.
 
 Disallow: /checkout

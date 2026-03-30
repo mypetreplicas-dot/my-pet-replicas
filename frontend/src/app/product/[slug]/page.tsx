@@ -17,14 +17,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const desc = data.product.description?.replace(/<[^>]*>/g, '').trim().slice(0, 160)
-        || 'Custom hand-painted pet replica made in San Antonio, TX. Upload photos and receive a one-of-a-kind keepsake.';
+        || 'Custom hand-painted pet clone made in San Antonio, TX. Upload photos and receive a one-of-a-kind keepsake.';
 
     return {
         title: `Custom Hand-Painted ${data.product.name}. San Antonio, TX | My Pet Clones`,
         description: desc,
         keywords: [
-            'custom pet replica', 'hand-painted pet figurine', 'pet memorial San Antonio',
-            'custom dog replica', 'custom cat replica', 'pet portrait San Antonio TX',
+            'custom pet clone', 'hand-painted pet figurine', 'pet memorial San Antonio',
+            'custom dog clone', 'custom cat clone', 'pet portrait San Antonio TX',
             'personalized pet gift', 'pet memorial gift',
         ],
     };
@@ -160,11 +160,11 @@ export default async function ProductPage({ params }: PageProps) {
                             },
                             {
                                 q: 'How long does it take?',
-                                a: 'About a week from order to delivery. Each replica is hand-painted to order, so I take the time to get every detail right.',
+                                a: 'About a week from order to delivery. Each clone is hand-painted to order, so I take the time to get every detail right.',
                             },
                             {
                                 q: 'Can you capture specific markings or colors?',
-                                a: 'Absolutely. That\'s what makes each replica special. Use the special instructions box to point out anything specific. Spots, stripes, eye color, unique markings. I\'ll make sure to get it right.',
+                                a: 'Absolutely. That\'s what makes each clone special. Use the special instructions box to point out anything specific. Spots, stripes, eye color, unique markings. I\'ll make sure to get it right.',
                             },
                             {
                                 q: 'Is this a good gift for a pet owner?',
@@ -225,7 +225,7 @@ export default async function ProductPage({ params }: PageProps) {
                                     We Sculpt &amp; Paint
                                 </h3>
                                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                                    I 3D-sculpt and hand-paint your replica to match every marking, color, and expression that makes your pet one of a kind.
+                                    I 3D-sculpt and hand-paint your clone to match every marking, color, and expression that makes your pet one of a kind.
                                 </p>
                             </div>
                         </ProductFadeUp>
@@ -245,7 +245,7 @@ export default async function ProductPage({ params }: PageProps) {
                                     Unbox Your Best Friend
                                 </h3>
                                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                                    Your replica arrives in premium packaging, ready to sit on a shelf forever. Whether it&apos;s a memorial or the perfect gift for a pet owner.
+                                    Your clone arrives in premium packaging, ready to sit on a shelf forever. Whether it&apos;s a memorial or the perfect gift for a pet owner.
                                 </p>
                             </div>
                         </ProductFadeUp>

@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { orderCode } = await params;
   return {
     title: `Upload Photos - Order ${orderCode} | My Pet Clones`,
-    description: 'Upload photos for your custom pet replica order',
+    description: 'Upload photos for your custom pet clone order',
   };
 }
 

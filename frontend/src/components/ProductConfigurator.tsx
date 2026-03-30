@@ -657,7 +657,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                             Added to Cart
                         </span>
                     ) : (
-                        'Commission My Replica →'
+                        'Commission My Clone →'
                     )}
                 </button>
             </div>

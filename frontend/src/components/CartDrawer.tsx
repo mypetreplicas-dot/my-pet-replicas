@@ -100,14 +100,14 @@ export default function CartDrawer() {
                             </div>
                             <p className="text-neutral-400 text-base font-medium mb-2">Your cart is empty</p>
                             <p className="text-neutral-500 text-sm mb-8 max-w-[240px]">
-                                Commission a hand-painted replica of your best friend.
+                                Commission a hand-painted clone of your best friend.
                             </p>
                             <Link
                                 href="/product/custom-pet-replica"
                                 onClick={closeCart}
                                 className="px-6 py-3 min-h-[48px] bg-terra-600 hover:bg-terra-500 text-white text-sm font-semibold rounded-full transition-all shadow-[0_0_24px_rgba(212,112,62,0.25)] hover:shadow-[0_0_32px_rgba(212,112,62,0.4)] flex items-center justify-center"
                             >
-                                Start Customizing Your Replica
+                                Start Customizing Your Clone
                             </Link>
                         </div>
                     ) : (
@@ -160,7 +160,7 @@ export default function CartDrawer() {
                                                 className="text-sm font-medium text-white hover:text-terra-300 transition-colors line-clamp-1"
                                                 onClick={closeCart}
                                             >
-                                                {petName ? `${petName}'s Replica` : line.productVariant.product.name}
+                                                {petName ? `${petName}'s Clone` : line.productVariant.product.name}
                                             </Link>
                                             <p className="text-xs text-neutral-500 mt-0.5">
                                                 {line.productVariant.name}

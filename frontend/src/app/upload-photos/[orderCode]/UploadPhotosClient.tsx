@@ -146,7 +146,7 @@ export default function UploadPhotosClient({
           </div>
           <h1 className="text-3xl font-display font-bold text-white mb-3">Photos Received!</h1>
           <p className="text-neutral-400 mb-8">
-            Thank you so much! I&apos;ve got your photos and I&apos;ll get started on your replica soon. I&apos;ll reach out if I need anything else.
+            Thank you so much! I&apos;ve got your photos and I&apos;ll get started on your clone soon. I&apos;ll reach out if I need anything else.
           </p>
           <a
             href="/"
@@ -171,7 +171,7 @@ export default function UploadPhotosClient({
             Send Me Your Pet&apos;s Photos
           </h1>
           <p className="text-neutral-400 text-lg">
-            Hey {customerName}! Upload clear photos so I can paint your replica. Multiple angles help.
+            Hey {customerName}! Upload clear photos so I can paint your clone. Multiple angles help.
           </p>
         </div>
 
@@ -326,7 +326,7 @@ export default function UploadPhotosClient({
               d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
             />
           </svg>
-          Your photos are secure and only used to paint your replica
+          Your photos are secure and only used to paint your clone
         </p>
       </div>
     </div>

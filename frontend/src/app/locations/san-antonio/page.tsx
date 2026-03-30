@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'Custom Pet Clones in San Antonio, TX | My Pet Clones',
-    description: 'Beautiful, hand-painted custom pet replicas made right here in San Antonio, Texas. 5-star rated on Etsy, local delivery available.',
+    description: 'Beautiful, hand-painted custom pet clones made right here in San Antonio, Texas. 5-star rated on Etsy, local delivery available.',
 };
 
 const reviews = [
@@ -15,7 +15,7 @@ const reviews = [
     },
     {
         name: 'James R.',
-        text: 'We lost our cat last year and this replica sits on our mantle now. It\'s like she\'s still here with us. Worth every penny.',
+        text: 'We lost our cat last year and this clone sits on our mantle now. It\'s like she\'s still here with us. Worth every penny.',
         stars: 5,
     },
     {
@@ -35,7 +35,7 @@ export default function SanAntonioPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src="/images/replicas/_DSC3783.jpg"
-                        alt="A hand-painted custom pet replica sitting beside a framed photo in San Antonio"
+                        alt="A hand-painted custom pet clone sitting beside a framed photo in San Antonio"
                         className="w-full h-full object-cover opacity-25"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-dark-main)] via-[var(--color-dark-main)]/50 to-[var(--color-dark-main)]" />
@@ -50,7 +50,7 @@ export default function SanAntonioPage() {
 
                             <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-[1.1]">
                                 San Antonio's Best{' '}
-                                <span className="text-gradient-terra">Custom Pet Replicas</span>
+                                <span className="text-gradient-terra">Custom Pet Clones</span>
                             </h1>
 
                             <p className="text-lg md:text-xl text-neutral-400 leading-relaxed max-w-lg">
@@ -62,7 +62,7 @@ export default function SanAntonioPage() {
                                     href="/product/custom-pet-replica"
                                     className="px-8 py-4 min-h-[48px] min-w-[48px] bg-terra-600 hover:bg-terra-500 text-white text-base font-semibold rounded-full transition-all shadow-[0_0_32px_rgba(212,112,62,0.25)] hover:shadow-[0_0_48px_rgba(212,112,62,0.4)] flex items-center justify-center"
                                 >
-                                    Create My Pet Replica →
+                                    Create My Pet Clone →
                                 </Link>
                             </div>
                         </div>
@@ -140,7 +140,7 @@ export default function SanAntonioPage() {
                             {
                                 step: '02',
                                 title: 'Painted in San Antonio',
-                                desc: 'I sculpt and hand-paint your replica right here in my San Antonio studio, matching every unique detail.',
+                                desc: 'I sculpt and hand-paint your clone right here in my San Antonio studio, matching every unique detail.',
                                 icon: (
                                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
@@ -150,7 +150,7 @@ export default function SanAntonioPage() {
                             {
                                 step: '03',
                                 title: 'Fast Local Delivery',
-                                desc: 'Your finished replica is carefully packed and shipped. Since you live locally, shipping times are incredibly fast.',
+                                desc: 'Your finished clone is carefully packed and shipped. Since you live locally, shipping times are incredibly fast.',
                                 icon: (
                                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />

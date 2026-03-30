@@ -83,7 +83,7 @@ export default function ExitIntentPopup() {
                     {!submitted ? (
                         <>
                             <h2 className="font-display text-xl md:text-2xl font-bold text-white mb-2 md:mb-4 pr-8">
-                                Not quite ready to commission a replica?
+                                Not quite ready to commission a clone?
                             </h2>
                             <p className="text-neutral-400 mb-6 md:mb-8 leading-relaxed text-sm md:text-base">
                                 Get our free guide on <strong>"How to Take the Perfect Reference Photo"</strong>. Plus, we'll send you a 10% discount for when you are ready.

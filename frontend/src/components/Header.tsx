@@ -29,7 +29,7 @@ export default function Header() {
                             href="/product/custom-pet-replica"
                             className="px-6 py-3 min-h-[44px] bg-terra-600 hover:bg-terra-500 text-white text-[16px] font-semibold rounded-full transition-all shadow-[0_2px_8px_hsla(22,74%,54%,0.25)] flex items-center justify-center"
                         >
-                            Create My Replica
+                            Create My Clone
                         </Link>
                     </div>
 
@@ -64,7 +64,7 @@ export default function Header() {
                         className="w-full px-6 py-4 min-h-[44px] bg-terra-600 hover:bg-terra-500 text-white text-[18px] font-semibold rounded-full transition-colors flex items-center justify-center shadow-[0_4px_12px_hsla(22,74%,54%,0.3)]"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
-                        Create My Replica
+                        Create My Clone
                     </Link>
                 </div>
             )}

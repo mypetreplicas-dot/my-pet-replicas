@@ -30,7 +30,7 @@ export default function HomePage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/replicas/_DSC3783.jpg"
-            alt="A hand-painted custom pet replica sitting beside a framed photo"
+            alt="A hand-painted custom pet clone sitting beside a framed photo"
             className="w-full h-full object-cover opacity-40 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark-main)] via-[var(--color-dark-main)]/70 to-black/30" />
@@ -49,7 +49,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-lg md:text-xl text-neutral-200 leading-relaxed max-w-lg drop-shadow-md">
-                A hand painted replica that captures your pet's markings and expressions. This is the best gift for dog and cat owners.
+                A hand painted clone that captures your pet's markings and expressions. This is the best gift for dog and cat owners.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-8">
@@ -57,7 +57,7 @@ export default function HomePage() {
                   href="/product/custom-pet-replica"
                   className="px-8 py-5 min-h-[56px] bg-terra-600 hover:bg-terra-500 text-white text-[18px] font-bold rounded-full transition-all shadow-[0_4px_16px_hsla(22,74%,54%,0.4)] hover:shadow-[0_8px_24px_hsla(22,74%,54%,0.6)] hover:-translate-y-1 flex items-center justify-center duration-300"
                 >
-                  Create My Pet Replica →
+                  Create My Pet Clone →
                 </Link>
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {workImages.map((src, i) => (
                 <HomeFadeUp key={i} delay={i * 0.1}>
-                  <ExpandableImage src={src} alt={`Pet replica ${i + 1}`} />
+                  <ExpandableImage src={src} alt={`Pet clone ${i + 1}`} />
                 </HomeFadeUp>
               ))}
             </div>
@@ -212,7 +212,7 @@ export default function HomePage() {
                   Unbox Your Best Friend
                 </h3>
                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                  Your replica arrives ready as a memorial or just a good gift for someone who loves their pet.
+                  Your clone arrives ready as a memorial or just a good gift for someone who loves their pet.
                 </p>
               </div>
             </HomeFadeUp>

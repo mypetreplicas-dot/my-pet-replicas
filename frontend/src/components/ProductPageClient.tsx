@@ -41,7 +41,7 @@ export function ProductGallery({ images, productName }: { images: string[]; prod
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={formats.fallback}
-                                alt={`Custom hand-painted ${productName} replica`}
+                                alt={`Custom hand-painted ${productName} clone`}
                                 className="w-full h-full object-cover"
                             />
                         </picture>

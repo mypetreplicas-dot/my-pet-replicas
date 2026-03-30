@@ -384,7 +384,7 @@ export default function CheckoutPage() {
                                         </svg>
                                     ),
                                     title: 'I Start Painting',
-                                    desc: 'I\'ll begin hand-painting your replica. Takes about a week.',
+                                    desc: 'I\'ll begin hand-painting your clone. Takes about a week.',
                                     active: false,
                                 },
                                 {
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm text-neutral-200 font-medium line-clamp-1">{line.productVariant?.product?.name || 'Custom Pet Replica'}</p>
+                                            <p className="text-sm text-neutral-200 font-medium line-clamp-1">{line.productVariant?.product?.name || 'Custom Pet Clone'}</p>
                                             <p className="text-xs text-neutral-500">{line.productVariant?.name} · Qty {line.quantity}</p>
                                         </div>
                                         <span className="text-sm text-neutral-300">${(((line as any).linePrice || line.linePriceWithTax) / 100).toFixed(2)}</span>
@@ -477,7 +477,7 @@ export default function CheckoutPage() {
                             href="/product/custom-pet-replica"
                             className="px-8 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold rounded-full transition-all shadow-lg text-center"
                         >
-                            Create Another Replica
+                            Create Another Clone
                         </Link>
                     </div>
                 </div>
@@ -496,12 +496,12 @@ export default function CheckoutPage() {
                         </svg>
                     </div>
                     <h1 className="text-2xl font-display font-bold text-white">Your cart is empty</h1>
-                    <p className="text-neutral-500 text-sm">Start by choosing a replica. It only takes a couple of minutes.</p>
+                    <p className="text-neutral-500 text-sm">Start by choosing a clone. It only takes a couple of minutes.</p>
                     <Link
                         href="/product/custom-pet-replica"
                         className="inline-block px-8 py-3 bg-terra-600 hover:bg-terra-500 text-white font-semibold rounded-full transition-all"
                     >
-                        Create Your Replica →
+                        Create Your Clone →
                     </Link>
                 </div>
             </main>
@@ -674,7 +674,7 @@ export default function CheckoutPage() {
                                                                 <p className="text-sm text-neutral-200 font-medium">{isLocalDelivery ? 'Local Delivery' : method.name}</p>
                                                             </div>
                                                             {isLocalDelivery && (
-                                                                <p className="text-xs text-terra-400 mt-1 ml-6">I will personally deliver your replicas to you! (San Antonio area)</p>
+                                                                <p className="text-xs text-terra-400 mt-1 ml-6">I will personally deliver your clones to you! (San Antonio area)</p>
                                                             )}
                                                         </div>
                                                         <span className={`text-sm font-medium ${method.price === 0 ? 'text-terra-400' : 'text-neutral-300'}`}>

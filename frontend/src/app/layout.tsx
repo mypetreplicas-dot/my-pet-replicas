@@ -132,7 +132,7 @@ export default function RootLayout({
                         </li>
                         <li>
                           <span className="text-sm text-neutral-500 leading-relaxed block">
-                            I will never share the reference photos you provide. If I'd like to post your finished replica online, I will always ask for your permission first.
+                            I will never share the reference photos you provide. If I'd like to post your finished clone online, I will always ask for your permission first.
                           </span>
                         </li>
                       </ul>
