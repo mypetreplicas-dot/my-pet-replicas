@@ -1,4 +1,4 @@
-# My Pet Replicas - Development Roadmap & Tasks
+# My Pet Clones - Development Roadmap & Tasks
 
 ## Phase 1: Environment & Foundation
 - [x] Scaffold Backend (Vendure) & Frontend (Next.js)
@@ -40,9 +40,12 @@
 - [x] **Asset Storage:**
   - [x] `@vendure/asset-server-plugin` configured with local dev storage + Cloudflare R2 for production.
 - [x] **Transactional Email:**
-  - [x] `@vendure/email-plugin` connected to Resend (SMTP) with verified domain `sales.mypetreplicas.com`.
+  - [x] `@vendure/email-plugin` connected to Resend (HTTP API) with verified domain `sales.mypetclones.com`.
   - [x] Styled "Order Confirmation" email template (dark theme matching website design).
+  - [x] Styled "Shipping Confirmation" email template (auto-sends on order fulfillment).
   - [x] Fixed timezone display (TZ=America/Chicago).
+  - [x] Hardened all email templates against crash scenarios (missing order data, null assets, non-order templates).
+  - [x] Switched non-order templates (email-verification, password-reset, email-address-change) to dark theme.
 
 ## Phase 5b: Pre-Launch Hardening
 - [x] **Footer Redesign:** 4-column layout (Brand/NAP, Shop, Support/Legal, Secure Payments) with trust badges, payment icons (Stripe, Visa, Mastercard), SSL lock, Privacy Policy & Terms links. Mobile-stacked, tertiary styling.
@@ -55,11 +58,15 @@
 - [ ] **How It Works Section:** Redesigned with Rule of Three (Upload, Sculpt & Paint, Unbox), custom 32px SVG icons, left-aligned on mobile / 3-column on desktop, `max-w-[1000px]`, secondary ghost CTA, `dark-elevated` background separation.
 
 ## Phase 6: Deployment & Launch
-- [ ] Provision Production PostgreSQL Database (Railway / Supabase).
-- [ ] Deploy Vendure Backend (e.g., to Railway).
-- [ ] Deploy Next.js Frontend (e.g., to Vercel or Railway).
-- [ ] Configure Custom Domain and switch out localhost environment variables.
-- [ ] Switch Stripe from `Test Mode` to `Live Mode`.
+- [x] Provision Production PostgreSQL Database (Railway).
+- [x] Deploy Vendure Backend to Railway.
+- [x] Deploy Next.js Frontend to Railway.
+- [x] Configure Custom Domain and switch out localhost environment variables.
+- [x] Switch Stripe from `Test Mode` to `Live Mode`.
+- [x] Remove test mode card text from checkout UI.
+- [x] Add email confirmation (retype) field on checkout for redundancy.
+- [x] Remove "Contact Artist" link from header (desktop + mobile).
+- [x] Fix mobile Chrome HDR brightness glitch (removed backdrop-blur, mix-blend-mode, added sRGB canvas conversion for uploaded images).
 
 ## Phase 7: Post-Launch Enhancements (V2) & Mobile-First Push
 - [ ] **Animated Background:** Implement a video or sequence of images showing a hand-drawn dog animating across the screen.

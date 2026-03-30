@@ -3,7 +3,7 @@ import { HomeHero, HomeFadeUp } from '@/components/HomeAnimations';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Custom Pet Replicas in San Antonio, TX | My Pet Replicas',
+    title: 'Custom Pet Clones in San Antonio, TX | My Pet Clones',
     description: 'Beautiful, hand-painted custom pet replicas made right here in San Antonio, Texas. 5-star rated on Etsy, local delivery available.',
 };
 

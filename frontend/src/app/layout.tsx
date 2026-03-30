@@ -14,9 +14,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "My Pet Replicas | Custom Hand-Painted Pet Figures. San Antonio, TX",
+  title: "My Pet Clones | Custom Hand-Painted Pet Figures. San Antonio, TX",
   description:
-    "Custom hand-painted pet replicas starting at $150. Each one is painted by a single artist in San Antonio, TX. Your pet, actually painted to look like them.",
+    "Custom hand-painted pet clones starting at $150. Each one is painted by a single artist in San Antonio, TX. Your pet, actually painted to look like them.",
   robots: {
     index: true,
     follow: true,
@@ -36,9 +36,9 @@ export default function RootLayout({
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "My Pet Replicas",
-    "image": "https://mypetreplicas.com/images/replicas/_DSC3783.jpg",
-    "description": "Custom hand-painted pet replicas starting at $150. Each one painted by a single artist in San Antonio, TX.",
+    "name": "My Pet Clones",
+    "image": "https://mypetclones.com/images/replicas/_DSC3783.jpg",
+    "description": "Custom hand-painted pet clones starting at $150. Each one painted by a single artist in San Antonio, TX.",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "San Antonio",
@@ -50,7 +50,7 @@ export default function RootLayout({
       "latitude": 29.4241,
       "longitude": -98.4936
     },
-    "url": "https://mypetreplicas.com",
+    "url": "https://mypetclones.com",
     "email": "mypetreplicas@gmail.com",
     "priceRange": "$$",
     "aggregateRating": {
@@ -91,7 +91,7 @@ export default function RootLayout({
                   {/* Column 1: Brand & NAP */}
                   <div className="md:w-1/3">
                     <span className="font-display font-bold text-xl text-white">
-                      MyPet<span className="text-terra-400">Replicas</span>
+                      MyPet<span className="text-terra-400">Clones</span>
                     </span>
                     <address className="not-italic mt-4 space-y-1.5 text-sm text-neutral-500 leading-relaxed">
                       <p>San Antonio, TX</p>
@@ -143,7 +143,7 @@ export default function RootLayout({
                 {/* ── Bottom Bar ── */}
                 <div className="mt-16 pt-8 border-t border-neutral-800/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
                   <p>
-                    &copy; 2026 MyPetReplicas. All rights reserved.
+                    &copy; 2026 MyPetClones. All rights reserved.
                   </p>
                   <p>Hand-painted in San Antonio, TX</p>
                 </div>

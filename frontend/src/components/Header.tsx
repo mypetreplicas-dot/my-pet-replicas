@@ -18,7 +18,7 @@ export default function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                 >
                     <span className="font-display font-bold text-2xl tracking-tight text-white">
-                        MyPet<span className="text-terra-400">Replicas</span>
+                        MyPet<span className="text-terra-400">Clones</span>
                     </span>
                 </Link>
 

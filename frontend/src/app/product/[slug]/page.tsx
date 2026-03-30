@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         || 'Custom hand-painted pet replica made in San Antonio, TX. Upload photos and receive a one-of-a-kind keepsake.';
 
     return {
-        title: `Custom Hand-Painted ${data.product.name}. San Antonio, TX | My Pet Replicas`,
+        title: `Custom Hand-Painted ${data.product.name}. San Antonio, TX | My Pet Clones`,
         description: desc,
         keywords: [
             'custom pet replica', 'hand-painted pet figurine', 'pet memorial San Antonio',
@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: PageProps) {
         "image": galleryImages,
         "brand": {
             "@type": "Brand",
-            "name": "My Pet Replicas"
+            "name": "My Pet Clones"
         },
         "offers": {
             "@type": "AggregateOffer",
@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: PageProps) {
             "availability": "https://schema.org/InStock",
             "seller": {
                 "@type": "Organization",
-                "name": "My Pet Replicas"
+                "name": "My Pet Clones"
             }
         },
         "aggregateRating": {
@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: PageProps) {
         },
         "manufacturer": {
             "@type": "Organization",
-            "name": "My Pet Replicas",
+            "name": "My Pet Clones",
             "address": {
                 "@type": "PostalAddress",
                 "addressLocality": "San Antonio",

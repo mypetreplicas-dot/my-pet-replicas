@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Business Information
-# My Pet Replicas - Premium Custom Pet Replicas
+# My Pet Clones - Premium Custom Pet Clones
 # Location: San Antonio, TX
 # Specialization: Hand-painted custom pet figurines
 # Products: 5-inch, 6-inch replicas with and without display bases
