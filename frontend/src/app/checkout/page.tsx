@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useCart, vendureMutation } from '@/context/CartContext';
 
-const STRIPE_PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51T2mwGPQzaJzUOsVyMoI6GkOVeHW5KFgZPvfWthais2rtA0Dah2LqNyiWPcuJGkmJA6Tsp10JaW2WLdhgJhXzDcc003EvjZjA3';
+const STRIPE_PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
 const stripePromise = loadStripe(STRIPE_PK);
 
 interface ShippingMethod {
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
                 if (methods.length > 0 && !selectedShippingMethodId) {
                     setSelectedShippingMethodId(methods[0].id);
                 }
-            } catch (e) { /* no active order yet is fine */ }
+            } catch (e) { console.error('Failed to fetch shipping methods:', e); }
         };
         if (order) fetchMethods();
     }, [order, selectedShippingMethodId]);
@@ -552,28 +552,28 @@ export default function CheckoutPage() {
                         {step === 'shipping' && (
                             <form onSubmit={handleShippingSubmit} className="space-y-6">
                                 <h2 className="text-lg font-semibold text-white mb-4">Contact Information</h2>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">First Name</label>
                                         <input type="text" required value={form.firstName} onChange={(e) => updateField('firstName', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
                                     </div>
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">Last Name</label>
                                         <input type="text" required value={form.lastName} onChange={(e) => updateField('lastName', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Email</label>
                                     <input type="email" required value={form.emailAddress} onChange={(e) => updateField('emailAddress', e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                        className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="you@example.com" />
                                 </div>
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Confirm Email</label>
                                     <input type="email" required value={form.confirmEmail} onChange={(e) => updateField('confirmEmail', e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                        className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="you@example.com" />
                                     {form.confirmEmail && form.emailAddress !== form.confirmEmail && (
                                         <p className="text-red-400 text-xs mt-1.5">Email addresses do not match.</p>
@@ -582,7 +582,7 @@ export default function CheckoutPage() {
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Phone</label>
                                     <input type="tel" value={form.phoneNumber} onChange={(e) => updateField('phoneNumber', e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                        className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="(210) 555-1234" />
                                 </div>
 
@@ -592,39 +592,39 @@ export default function CheckoutPage() {
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Street Address</label>
                                     <input type="text" required value={form.streetLine1} onChange={(e) => updateField('streetLine1', e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                        className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                         placeholder="123 Main St" />
                                 </div>
                                 <div>
                                     <label className="block text-xs text-neutral-500 mb-1.5">Apartment, suite, etc. <span className="text-neutral-600">(optional)</span></label>
                                     <input type="text" value={form.streetLine2} onChange={(e) => updateField('streetLine2', e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
+                                        className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">City</label>
                                         <input type="text" required value={form.city} onChange={(e) => updateField('city', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                             placeholder="San Antonio" />
                                     </div>
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">State</label>
                                         <input type="text" required value={form.province} onChange={(e) => updateField('province', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                             placeholder="TX" />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">ZIP Code</label>
                                         <input type="text" required value={form.postalCode} onChange={(e) => updateField('postalCode', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40"
                                             placeholder="78201" />
                                     </div>
                                     <div>
                                         <label className="block text-xs text-neutral-500 mb-1.5">Country</label>
                                         <select value={form.countryCode} onChange={(e) => updateField('countryCode', e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-800/50 text-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-terra-500/40">
+                                            className="w-full px-4 py-4 rounded-xl bg-neutral-800/50 text-neutral-200 text-base focus:outline-none focus:ring-2 focus:ring-terra-500/40">
                                             <option value="US">United States</option>
                                         </select>
                                     </div>

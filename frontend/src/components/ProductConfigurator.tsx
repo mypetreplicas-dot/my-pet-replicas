@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import type { Product, ProductVariant, OptionGroup } from '@/lib/vendure';
-import { uploadPetPhotos, getEnabledVariants } from '@/lib/vendure';
+import { uploadPetPhotos, getEnabledVariants, queryVendure, GET_PRODUCT_BY_SLUG_QUERY, type GetProductBySlugResponse } from '@/lib/vendure';
 import { useCart, getVendureToken } from '@/context/CartContext';
+import { useImagePreview } from '@/lib/imageUtils';
 
 interface ProductConfiguratorProps {
     product: Product;
@@ -47,7 +48,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                     This product is currently unavailable.
                 </p>
                 <p className="text-neutral-500 text-sm mt-2">
-                    Please check back soon, or <a href="mailto:mypetreplicas@gmail.com" className="text-terra-400 hover:text-terra-300 transition-colors">email me</a> and I&apos;ll let you know when it&apos;s back.
+                    Please check back soon, or <a href="mailto:hello@cherishedmementos.com" className="text-terra-400 hover:text-terra-300 transition-colors">email me</a> and I&apos;ll let you know when it&apos;s back.
                 </p>
             </div>
         );
@@ -79,34 +80,17 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     ]);
 
     // Convert uploaded photos to sRGB data URLs to prevent Chrome HDR compositing glitch
-    const previewUrls = useRef<Map<File, string>>(new Map());
-    const [, setPreviewTick] = useState(0);
-    const getPreviewUrl = useCallback((file: File) => {
-        const existing = previewUrls.current.get(file);
-        if (existing) return existing;
-        const blobUrl = URL.createObjectURL(file);
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
-            if (ctx) {
-                ctx.drawImage(img, 0, 0);
-                previewUrls.current.set(file, canvas.toDataURL('image/jpeg', 0.85));
-                setPreviewTick(t => t + 1);
-            }
-            URL.revokeObjectURL(blobUrl);
-        };
-        img.src = blobUrl;
-        return blobUrl;
-    }, []);
+    const getPreviewUrl = useImagePreview();
 
     const [isAdding, setIsAdding] = useState(false);
     const [added, setAdded] = useState(false);
     const [uploadProgress, setUploadProgress] = useState('');
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const [fileErrors, setFileErrors] = useState<Record<string, { message: string; previewUrl?: string }[]>>({});
+
+    // Base options (global, not per-pet)
+    const [wantsBase, setWantsBase] = useState(false);
+    const [togetherOnBase, setTogetherOnBase] = useState(true);
 
     // Clear error for a pet when they make changes
     const clearError = (petId: string) => {
@@ -120,6 +104,21 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     const groupLabels: Record<string, string> = {
         size: 'Select Size',
         base: 'Display Base',
+    };
+
+    // Add a pet (max 4)
+    const handleAddPet = () => {
+        if (pets.length >= 4) return;
+        setPets(prev => [...prev, {
+            id: String(Date.now()),
+            petName: '',
+            selectedOptions: getDefaultSelections(),
+            uploadedFiles: [],
+            preferredPhotoIndex: null,
+            specialInstructions: '',
+            skipImages: false,
+            isDragging: false,
+        }]);
     };
 
     // Remove a pet
@@ -167,24 +166,12 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         });
     };
 
-    // Calculate price for a pet with progressive tiering
-    // Pet 1: $150 (full), Pet 2: $140 (7% off), Pet 3: $130 (13% off), Pet 4+: $120 (20% off)
+    const ADDITIONAL_PET_PRICE = 120;
+
     const getPriceForPet = (petIndex: number, variant: ProductVariant | undefined) => {
+        if (petIndex > 0) return ADDITIONAL_PET_PRICE;
         if (!variant || typeof variant.price !== 'number' || isNaN(variant.price)) return null;
-        const basePrice = variant.price / 100;
-
-        if (petIndex === 0) return basePrice; // Full price
-        if (petIndex === 1) return basePrice * 0.93; // 7% off
-        if (petIndex === 2) return basePrice * 0.87; // 13% off
-        return basePrice * 0.80; // 20% off for pet 4+
-    };
-
-    // Get discount percentage for badge
-    const getDiscountPercent = (petIndex: number) => {
-        if (petIndex === 0) return null;
-        if (petIndex === 1) return 7;
-        if (petIndex === 2) return 13;
-        return 20;
+        return variant.price / 100;
     };
 
     const handleAddToCart = async () => {
@@ -225,6 +212,18 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         setIsAdding(true);
 
         try {
+            // Fetch additional-pet variant once if needed
+            let additionalPetVariantId: string | null = null;
+            if (pets.length > 1) {
+                const data = await queryVendure<GetProductBySlugResponse>(GET_PRODUCT_BY_SLUG_QUERY, { slug: 'additional-pet' });
+                additionalPetVariantId = data.product?.variants[0]?.id || null;
+                if (!additionalPetVariantId) {
+                    setValidationErrors({ _global: 'Could not load the additional pet product. Please contact us.' });
+                    setIsAdding(false);
+                    return;
+                }
+            }
+
             // Process each pet and add to cart
             for (let i = 0; i < pets.length; i++) {
                 const pet = pets[i];
@@ -243,13 +242,15 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 }
 
                 setUploadProgress(`Adding Pet ${i + 1} to cart...`);
-                const isAdditionalPet = i > 0;
-                const discountPercent = getDiscountPercent(i);
                 const instructionParts: string[] = [];
                 // Unique line ID prevents Vendure from merging lines with the same variant
                 instructionParts.push(`[Line: ${Date.now()}-${i}]`);
                 if (pet.petName.trim()) instructionParts.push(`[Pet name: ${pet.petName.trim()}]`);
-                if (isAdditionalPet && discountPercent) instructionParts.push(`[Multi-pet ${discountPercent}% off]`);
+                if (i === 0) {
+                    if (!wantsBase) instructionParts.push('[Base: none]');
+                    else if (pets.length > 1 && togetherOnBase) instructionParts.push('[Base: multiple-together]');
+                    else instructionParts.push(`[Base: single x${pets.length}]`);
+                }
                 if (pet.skipImages) instructionParts.push('[Photos pending]');
                 if (pet.preferredPhotoIndex !== null) {
                     const starredAssetId = assetIds[pet.preferredPhotoIndex] || '';
@@ -263,7 +264,8 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                     });
                 }
 
-                const result = await addToCart(variant.id, 1, {
+                const variantIdToUse = i === 0 ? variant.id : additionalPetVariantId!;
+                const result = await addToCart(variantIdToUse, 1, {
                     specialInstructions: instructionParts.length > 0 ? instructionParts.join('\n') : undefined,
                     petPhotos: assetIds.length > 0 ? assetIds : undefined,
                 });
@@ -271,6 +273,29 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 if (!result.success) {
                     setUploadProgress('');
                     setValidationErrors({ _global: result.errorMessage || 'Something went wrong. Please try again.' });
+                    setIsAdding(false);
+                    return;
+                }
+            }
+
+            // Add base product(s) if requested
+            if (wantsBase) {
+                const useMultiple = pets.length > 1 && togetherOnBase;
+                const baseSlug = useMultiple ? 'multiple-base' : 'single-base';
+                const baseQty = useMultiple ? 1 : pets.length;
+
+                setUploadProgress('Adding base to cart...');
+                const baseData = await queryVendure<GetProductBySlugResponse>(GET_PRODUCT_BY_SLUG_QUERY, { slug: baseSlug });
+                const baseVariantId = baseData.product?.variants[0]?.id || null;
+                if (!baseVariantId) {
+                    setValidationErrors({ _global: 'Could not load the base product. Please contact us.' });
+                    setIsAdding(false);
+                    return;
+                }
+                const baseResult = await addToCart(baseVariantId, baseQty);
+                if (!baseResult.success) {
+                    setUploadProgress('');
+                    setValidationErrors({ _global: baseResult.errorMessage || 'Something went wrong adding the base. Please try again.' });
                     setIsAdding(false);
                     return;
                 }
@@ -308,16 +333,16 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-white">
                                     Pet {petIndex + 1}
-                                    {isAdditionalPet && getDiscountPercent(petIndex) && (
-                                        <span className="ml-2 text-xs font-semibold text-terra-400 bg-terra-500/10 px-2 py-1 rounded-full">
-                                            {getDiscountPercent(petIndex)}% OFF
+                                    {isAdditionalPet && (
+                                        <span className="ml-2 text-xs font-normal text-neutral-500">
+                                            +$120.00
                                         </span>
                                     )}
                                 </h3>
                                 {petIndex > 0 && (
                                     <button
                                         onClick={() => handleRemovePet(pet.id)}
-                                        className="text-xs text-neutral-500 hover:text-red-400 transition-colors"
+                                        className="text-sm text-neutral-500 hover:text-red-400 transition-colors min-h-[44px] px-2 flex items-center"
                                     >
                                         Remove
                                     </button>
@@ -328,7 +353,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                         {/* Price */}
                         {petIndex === 0 && (
                             <div>
-                                <span className="text-4xl font-display font-bold text-white">{priceDisplay}</span>
+                                <span className="text-4xl font-display font-bold text-[var(--color-text-primary)]">{priceDisplay}</span>
                                 <span className="ml-2 text-sm text-neutral-500">+ tax</span>
                             </div>
                         )}
@@ -344,7 +369,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                 value={pet.petName}
                                 onChange={(e) => updatePetField(pet.id, 'petName', e.target.value)}
                                 placeholder="e.g. Buddy, Luna, Max..."
-                                className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 transition-all"
+                                className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-base text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 transition-all"
                             />
                         </div>
 
@@ -361,7 +386,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                             <button
                                                 key={option.id}
                                                 onClick={() => updatePetOption(pet.id, group.code, option.code)}
-                                                className={`px-5 py-3 rounded-lg text-sm font-medium transition-all ${isSelected
+                                                className={`px-5 py-4 min-h-[52px] rounded-lg text-base font-medium transition-all ${isSelected
                                                     ? 'bg-terra-600 text-white shadow-[0_0_16px_rgba(212,112,62,0.3)]'
                                                     : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
                                                     }`}
@@ -391,19 +416,19 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                         updatePetField(pet.id, 'preferredPhotoIndex', null);
                                     }
                                 }}
-                                className="flex items-center gap-3 mb-5 group cursor-pointer"
+                                className="flex items-center gap-3 mb-5 min-h-[48px] group cursor-pointer"
                             >
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${pet.skipImages
+                                <div className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${pet.skipImages
                                     ? 'bg-terra-600 border-terra-600'
                                     : 'border-neutral-700 bg-neutral-800/50'
                                     }`}>
                                     {pet.skipImages && (
-                                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                         </svg>
                                     )}
                                 </div>
-                                <span className="text-sm text-neutral-300 group-hover:text-white transition-colors">
+                                <span className="text-base text-neutral-300 group-hover:text-white transition-colors">
                                     I'll add images later
                                 </span>
                             </button>
@@ -437,7 +462,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                         <button
                                                             type="button"
                                                             onClick={() => updatePetField(pet.id, 'preferredPhotoIndex', index)}
-                                                            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-bold tracking-wide uppercase transition-colors ${isPreferred
+                                                            className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-[11px] font-bold tracking-wide uppercase transition-colors ${isPreferred
                                                                 ? 'bg-terra-600 text-white'
                                                                 : 'bg-black/70 text-neutral-200 hover:bg-terra-600/80 hover:text-white active:bg-terra-600'
                                                                 }`}
@@ -460,7 +485,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                                                     updatePetField(pet.id, 'preferredPhotoIndex', pet.preferredPhotoIndex - 1);
                                                                 }
                                                             }}
-                                                            className="flex items-center justify-center px-3.5 py-2.5 bg-black/70 text-red-400 hover:bg-red-500/40 active:bg-red-500/60 transition-colors"
+                                                            className="flex items-center justify-center px-3.5 py-3.5 bg-black/70 text-red-400 hover:bg-red-500/40 active:bg-red-500/60 transition-colors"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -613,13 +638,74 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                                 value={pet.specialInstructions}
                                 onChange={(e) => updatePetField(pet.id, 'specialInstructions', e.target.value)}
                                 placeholder="Specific markings, pose, nameplate text, whatever you want me to know..."
-                                className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 resize-none transition-all"
+                                className="w-full rounded-xl bg-neutral-800/50 px-5 py-4 text-base text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-terra-500/40 resize-none transition-all"
                             />
                         </div>
 
                     </div>
                 );
             })}
+
+            {/* Add Another Pet */}
+            {pets.length < 4 && (
+                <button
+                    type="button"
+                    onClick={handleAddPet}
+                    className="w-full py-5 min-h-[56px] px-6 rounded-xl border border-dashed border-neutral-700 hover:border-terra-500/50 text-neutral-500 hover:text-terra-400 text-base font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Add Another Pet
+                </button>
+            )}
+
+            {/* ── Base Option ── */}
+            <div className="rounded-xl border border-neutral-800 bg-neutral-800/30 p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-sm font-medium text-neutral-200">Add a display base?</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">
+                            {pets.length > 1
+                                ? 'Separate bases · $25 each · Together · $35'
+                                : '$25 — keeps your figurine upright and display-ready'}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setWantsBase(v => !v)}
+                        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus:outline-none ${wantsBase ? 'bg-terra-600' : 'bg-neutral-700'}`}
+                    >
+                        <span className={`inline-block h-5 w-5 translate-y-0.5 rounded-full bg-white shadow transition-transform duration-200 ${wantsBase ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                    </button>
+                </div>
+
+                {wantsBase && pets.length > 1 && (
+                    <div className="pt-1 border-t border-neutral-700/60">
+                        <p className="text-xs font-medium text-neutral-400 mb-3">How would you like them displayed?</p>
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setTogetherOnBase(true)}
+                                className={`flex-1 py-4 min-h-[52px] px-4 rounded-lg text-base font-medium transition-all ${togetherOnBase
+                                    ? 'bg-terra-600 text-white shadow-[0_0_16px_rgba(212,112,62,0.3)]'
+                                    : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}
+                            >
+                                Together · <span className="font-bold">$35</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setTogetherOnBase(false)}
+                                className={`flex-1 py-4 min-h-[52px] px-4 rounded-lg text-base font-medium transition-all ${!togetherOnBase
+                                    ? 'bg-terra-600 text-white shadow-[0_0_16px_rgba(212,112,62,0.3)]'
+                                    : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}
+                            >
+                                Separate · <span className="font-bold">${25 * pets.length}</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {/* Global error */}
             {validationErrors._global && (
@@ -636,7 +722,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                 <button
                     onClick={handleAddToCart}
                     disabled={isAdding}
-                    className={`w-full py-4 px-8 min-h-[48px] rounded-full text-lg font-semibold transition-all ${added
+                    className={`w-full py-5 px-8 min-h-[64px] rounded-full text-xl font-semibold transition-all ${added
                         ? 'bg-terra-700 text-white'
                         : 'bg-terra-600 hover:bg-terra-500 text-white shadow-[0_0_32px_rgba(212,112,62,0.3)] hover:shadow-[0_0_48px_rgba(212,112,62,0.5)]'
                         } disabled:opacity-70 disabled:cursor-not-allowed`}
@@ -657,7 +743,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                             Added to Cart
                         </span>
                     ) : (
-                        'Commission My Clone →'
+                        'Order My Figurine →'
                     )}
                 </button>
             </div>

@@ -81,7 +81,7 @@ export default function CartDrawer() {
                     </h2>
                     <button
                         onClick={closeCart}
-                        className="p-2 text-neutral-500 hover:text-white transition-colors"
+                        className="p-3 text-neutral-500 hover:text-white transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -100,14 +100,14 @@ export default function CartDrawer() {
                             </div>
                             <p className="text-neutral-400 text-base font-medium mb-2">Your cart is empty</p>
                             <p className="text-neutral-500 text-sm mb-8 max-w-[240px]">
-                                Commission a hand-painted clone of your best friend.
+                                Order a hand-painted figurine of your best friend.
                             </p>
                             <Link
                                 href="/product/custom-pet-replica"
                                 onClick={closeCart}
                                 className="px-6 py-3 min-h-[48px] bg-terra-600 hover:bg-terra-500 text-white text-sm font-semibold rounded-full transition-all shadow-[0_0_24px_rgba(212,112,62,0.25)] hover:shadow-[0_0_32px_rgba(212,112,62,0.4)] flex items-center justify-center"
                             >
-                                Start Customizing Your Clone
+                                Order Your Figurine
                             </Link>
                         </div>
                     ) : (
@@ -117,7 +117,6 @@ export default function CartDrawer() {
                                 const photos = line.customFields?.petPhotos;
                                 const nameMatch = instructions.match(/\[Pet name: (.+?)\]/);
                                 const petName = nameMatch ? nameMatch[1] : null;
-                                const discountMatch = instructions.match(/\[Multi-pet (\d+)% off\]/);
                                 const price = (line.linePrice / 100).toFixed(2);
 
                                 // Resolve the starred reference photo thumbnail
@@ -160,30 +159,20 @@ export default function CartDrawer() {
                                                 className="text-sm font-medium text-white hover:text-terra-300 transition-colors line-clamp-1"
                                                 onClick={closeCart}
                                             >
-                                                {petName ? `${petName}'s Clone` : line.productVariant.product.name}
+                                                {petName ? `${petName}'s Figurine` : line.productVariant.product.name}
                                             </Link>
                                             <p className="text-xs text-neutral-500 mt-0.5">
                                                 {line.productVariant.name}
                                             </p>
 
-                                            {/* Price with multi-pet discount indicator */}
-                                            {discountMatch ? (
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <p className="text-sm font-medium text-terra-400">${price}</p>
-                                                    <span className="text-xs font-semibold text-terra-400 bg-terra-500/10 px-2 py-0.5 rounded-full">
-                                                        {discountMatch[1]}% OFF
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <p className="text-sm text-neutral-300 mt-1">${price}</p>
-                                            )}
+                                            <p className="text-sm text-neutral-300 mt-1">${price}</p>
 
                                             {/* Remove button */}
                                             <div className="flex items-center mt-2">
                                                 <button
                                                     onClick={() => removeFromCart(line.id)}
                                                     disabled={isLoading}
-                                                    className="text-xs text-neutral-600 hover:text-red-400 transition-colors"
+                                                    className="text-sm text-neutral-600 hover:text-red-400 transition-colors min-h-[36px] flex items-center"
                                                 >
                                                     Remove
                                                 </button>
@@ -204,7 +193,7 @@ export default function CartDrawer() {
                             <button
                                 onClick={handleToggleRush}
                                 disabled={isAddingRush || isLoading}
-                                className={`w-full mb-4 flex items-center gap-3 py-3 px-4 rounded-lg transition-all text-left disabled:opacity-50 ${rushLine
+                                className={`w-full mb-4 flex items-center gap-3 py-4 min-h-[52px] px-4 rounded-lg transition-all text-left disabled:opacity-50 ${rushLine
                                     ? 'bg-terra-500/10 border border-terra-500/30'
                                     : 'border border-terra-500/20 hover:bg-terra-500/10'
                                     }`}
@@ -235,7 +224,7 @@ export default function CartDrawer() {
                         <Link
                             href="/checkout"
                             onClick={closeCart}
-                            className="block w-full py-4 text-center bg-terra-600 hover:bg-terra-500 text-white text-base font-semibold rounded-full transition-all shadow-[0_0_32px_rgba(212,112,62,0.25)] hover:shadow-[0_0_48px_rgba(212,112,62,0.4)]"
+                            className="block w-full py-5 min-h-[60px] text-center bg-terra-600 hover:bg-terra-500 text-white text-lg font-semibold rounded-full transition-all shadow-[0_0_32px_rgba(212,112,62,0.25)] hover:shadow-[0_0_48px_rgba(212,112,62,0.4)] flex items-center justify-center"
                         >
                             Proceed to Checkout
                         </Link>
