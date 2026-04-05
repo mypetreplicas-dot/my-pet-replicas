@@ -51,9 +51,10 @@
 - [x] **Footer Redesign:** 4-column layout (Brand/NAP, Shop, Support/Legal, Secure Payments) with trust badges, payment icons (Stripe, Visa, Mastercard), SSL lock, Privacy Policy & Terms links. Mobile-stacked, tertiary styling.
 - [x] **Form UX & Accessibility:** Replaced `alert()` file validation with inline error messages (red accent, clear fix instructions). All form fields already have permanent visible labels above inputs.
 - [x] **Database Safety:** Set `synchronize: false` in production DB config (`vendure-config.ts`). Dev keeps `synchronize: true`. Use `npx vendure migrate` for schema changes in production.
-- [ ] **Email Deliverability (SPF, DKIM, DMARC):**
-  - [ ] Configure SPF record to authorize Resend (end with `~all` softfail).
-  - [ ] Verify DKIM signing via Resend (`rsa-sha256`, 2048-bit key).
+- [ ] **Email Deliverability for new domain `cherishedmementos.com` (SPF, DKIM, DMARC):**
+  - [ ] Verify new domain `sales.cherishedmementos.com` in Resend dashboard.
+  - [ ] Configure SPF record in GoDaddy to authorize Resend.
+  - [ ] Add DKIM signing records to GoDaddy provided by Resend.
   - [ ] Set up DMARC policy (start with `p=none`, move to `p=quarantine` then `p=reject`).
 - [ ] **How It Works Section:** Redesigned with Rule of Three (Upload, Sculpt & Paint, Unbox), custom 32px SVG icons, left-aligned on mobile / 3-column on desktop, `max-w-[1000px]`, secondary ghost CTA, `dark-elevated` background separation.
 

@@ -1,6 +1,7 @@
 /**
- * Seed script for My Pet Replicas
- * Creates ONE product with two Option Groups (Size + Base) and 4 variants.
+ * Seed script for My Pet Clones
+ * Creates ONE product with 8 bundle variants (pet count × base option).
+ * No option groups — variants are looked up by SKU in the frontend.
  * Run with: npx ts-node src/seed.ts
  */
 import 'dotenv/config';
@@ -58,7 +59,7 @@ async function seed() {
     }
 
     // ── Step 2: Create the single product ──
-    console.log('\n📦 Creating product: Custom Pet Replica...');
+    console.log('\n📦 Creating product: Custom Pet Clone...');
     const createProductData = await adminQuery(
         `mutation CreateProduct($input: CreateProductInput!) {
             createProduct(input: $input) { id name }
@@ -69,10 +70,10 @@ async function seed() {
                 translations: [
                     {
                         languageCode: 'en',
-                        name: 'Custom Pet Replica',
+                        name: 'Custom Pet Figurine',
                         slug: 'custom-pet-replica',
                         description:
-                            'A beautifully hand-painted custom figure of your pet. Choose your size and whether you\'d like a display base included. Upload photos and we\'ll handcraft a one-of-a-kind replica that perfectly captures your pet\'s unique personality and markings.',
+                            'A beautifully hand-painted custom figurine of your pet. Upload photos and we\'ll handcraft a one-of-a-kind keepsake that perfectly captures your pet\'s unique personality and markings.',
                     },
                 ],
             },
@@ -82,91 +83,32 @@ async function seed() {
     const productId = createProductData.createProduct.id;
     console.log(`  ✓ Product created (id: ${productId})`);
 
-    // ── Step 3: Create Option Groups ──
-    console.log('\n🎛️  Creating option groups...');
-
-    // Size option group
-    const sizeGroupData = await adminQuery(
-        `mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-            createProductOptionGroup(input: $input) { id code options { id code } }
-        }`,
-        {
-            input: {
-                code: 'size',
-                translations: [{ languageCode: 'en', name: 'Size' }],
-                options: [
-                    { code: '4-inch', translations: [{ languageCode: 'en', name: '4 Inch' }] },
-                    { code: '5-inch', translations: [{ languageCode: 'en', name: '5 Inch' }] },
-                ],
-            },
-        },
-        token
-    );
-    console.log(`  ✓ Size option group created (id: ${sizeGroupData.createProductOptionGroup.id})`);
-
-    // Base option group
-    const baseGroupData = await adminQuery(
-        `mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-            createProductOptionGroup(input: $input) { id code options { id code } }
-        }`,
-        {
-            input: {
-                code: 'base',
-                translations: [{ languageCode: 'en', name: 'Base' }],
-                options: [
-                    { code: 'no-base', translations: [{ languageCode: 'en', name: 'No Base' }] },
-                    { code: 'with-base', translations: [{ languageCode: 'en', name: 'With Base' }] },
-                ],
-            },
-        },
-        token
-    );
-    console.log(`  ✓ Base option group created (id: ${baseGroupData.createProductOptionGroup.id})`);
-
-    // ── Step 4: Assign option groups to product ──
-    console.log('\n🔗 Assigning option groups to product...');
-    await adminQuery(
-        `mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-            addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) { id }
-        }`,
-        { productId, optionGroupId: sizeGroupData.createProductOptionGroup.id },
-        token
-    );
-    await adminQuery(
-        `mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-            addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) { id }
-        }`,
-        { productId, optionGroupId: baseGroupData.createProductOptionGroup.id },
-        token
-    );
-    console.log('  ✓ Both option groups assigned');
-
-    // ── Step 5: Create the 4 variants ──
+    // ── Step 3: Create the 8 bundle variants ──
+    // Pricing: flat per-pet-count bundles + base add-ons
+    //   No base:     1=$150  2=$270  3=$390
+    //   Own bases:   1=$175  2=$320  3=$465  (+$25 per pet)
+    //   Together:           2=$305  3=$435  (+$35 for 2, +$45 for 3)
     console.log('\n🏷️  Creating variants...');
 
-    const sizeOptions = sizeGroupData.createProductOptionGroup.options;
-    const baseOptions = baseGroupData.createProductOptionGroup.options;
-
-    // Map: [sizeCode, baseCode] → { sku, price }
     const variantDefs = [
-        { sizeCode: '4-inch', baseCode: 'no-base', sku: 'PET-4IN-NOBASE', price: 15000, name: '4 Inch. No Base' },
-        { sizeCode: '4-inch', baseCode: 'with-base', sku: 'PET-4IN-BASE', price: 17500, name: '4 Inch. With Base' },
-        { sizeCode: '5-inch', baseCode: 'no-base', sku: 'PET-5IN-NOBASE', price: 18500, name: '5 Inch. No Base' },
-        { sizeCode: '5-inch', baseCode: 'with-base', sku: 'PET-5IN-BASE', price: 21500, name: '5 Inch. With Base' },
+        { sku: 'PET-1-NOBASE',    price: 15000, name: '1 Pet — No Base' },
+        { sku: 'PET-1-BASE',      price: 17500, name: '1 Pet — With Base' },
+        { sku: 'PET-2-NOBASE',    price: 27000, name: '2 Pets — No Base' },
+        { sku: 'PET-2-OWNBASES',  price: 32000, name: '2 Pets — Each on Own Base' },
+        { sku: 'PET-2-TOGETHER',  price: 30500, name: '2 Pets — Together on Shared Base' },
+        { sku: 'PET-3-NOBASE',    price: 39000, name: '3 Pets — No Base' },
+        { sku: 'PET-3-OWNBASES',  price: 46500, name: '3 Pets — Each on Own Base' },
+        { sku: 'PET-3-TOGETHER',  price: 43500, name: '3 Pets — Together on Shared Base' },
     ];
 
-    const variantInputs = variantDefs.map((v) => {
-        const sizeOption = sizeOptions.find((o: any) => o.code === v.sizeCode);
-        const baseOption = baseOptions.find((o: any) => o.code === v.baseCode);
-        return {
-            productId,
-            sku: v.sku,
-            price: v.price,
-            stockOnHand: 100,
-            optionIds: [sizeOption.id, baseOption.id],
-            translations: [{ languageCode: 'en', name: v.name }],
-        };
-    });
+    const variantInputs = variantDefs.map((v) => ({
+        productId,
+        sku: v.sku,
+        price: v.price,
+        stockOnHand: 100,
+        optionIds: [],
+        translations: [{ languageCode: 'en', name: v.name }],
+    }));
 
     const variantData = await adminQuery(
         `mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
@@ -177,10 +119,10 @@ async function seed() {
     );
 
     for (const v of variantData.createProductVariants) {
-        console.log(`  ✓ Variant: ${v.name}. $${(v.price / 100).toFixed(2)} (sku: ${v.sku})`);
+        console.log(`  ✓ Variant: ${v.name} — $${(v.price / 100).toFixed(2)} (sku: ${v.sku})`);
     }
 
-    console.log('\n✅ Seed completed! Single product with 4 variants created successfully.');
+    console.log('\n✅ Seed completed! Single product with 8 bundle variants created successfully.');
 }
 
 seed().catch((err) => {

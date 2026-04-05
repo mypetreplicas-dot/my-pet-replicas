@@ -146,7 +146,7 @@ export const config: VendureConfig = {
                     handlers: [...defaultEmailHandlers, shippingConfirmationHandler],
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
-                        fromAddress: '"My Pet Clones" <noreply@sales.mypetclones.com>',
+                        fromAddress: '"My Pet Clones" <noreply@sales.cherishedmementos.com>',
                         verifyEmailAddressUrl: `${frontendUrl}/verify`,
                         passwordResetUrl: `${frontendUrl}/password-reset`,
                         changeEmailAddressUrl: `${frontendUrl}/verify-email-address-change`,
@@ -161,7 +161,7 @@ export const config: VendureConfig = {
                     handlers: [...defaultEmailHandlers, shippingConfirmationHandler],
                     templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
                     globalTemplateVars: {
-                        fromAddress: '"My Pet Clones" <noreply@sales.mypetclones.com>',
+                        fromAddress: '"My Pet Clones" <noreply@sales.cherishedmementos.com>',
                         verifyEmailAddressUrl: `${frontendUrl}/verify`,
                         passwordResetUrl: `${frontendUrl}/password-reset`,
                         changeEmailAddressUrl: `${frontendUrl}/verify-email-address-change`,

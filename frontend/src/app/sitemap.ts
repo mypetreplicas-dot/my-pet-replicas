@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { queryVendure, GET_PRODUCTS_QUERY, GetProductsResponse } from '@/lib/vendure';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://mypetclones.com';
+  const baseUrl = 'https://cherishedmementos.com';
 
   // Fetch all products
   let products: GetProductsResponse['products']['items'] = [];

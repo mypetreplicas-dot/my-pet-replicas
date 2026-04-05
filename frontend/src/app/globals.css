@@ -1,39 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter);
-  --font-display: 'Merriweather', serif;
+  --font-sans: 'Nunito', sans-serif;
+  --font-display: 'Fredoka One', cursive;
 
   /* ── Rich Terracotta Brand Color ── */
   --color-terra-50: #fdf5f0;
   --color-terra-100: #fae8dc;
   --color-terra-200: #f4cdb5;
-  --color-terra-300: #ecab86;
-  --color-terra-400: #e08a5c;
-  --color-terra-500: #d4703e;
-  --color-terra-600: #c45a2e;
-  --color-terra-700: #a34726;
+  --color-terra-300: #FF585D; /* New Brand Accent */
+  --color-terra-400: #FF585D; /* New Brand Accent */
+  --color-terra-500: #FF585D; /* New Brand Accent */
+  --color-terra-600: #CC3A3D; /* Brand Accent Hover */
+  --color-terra-700: #CC3A3D; /* Brand Accent Hover */
   --color-terra-800: #843b24;
   --color-terra-900: #6c3321;
   --color-terra-950: #3a1910;
+  
+  --color-blue-secondary: #0033A0;
+  --color-blue-hover: #002680;
+  --color-gold: #C08B45; /* Restored vibrant gold for dark backgrounds */
+  --color-success: #72C02C;
 
-  /* ── Premium Dark Greys (10 shades) ── */
-  --color-neutral-50: #fafafa;
-  --color-neutral-100: #f4f4f5;
-  --color-neutral-200: #e4e4e7;
-  --color-neutral-300: #d4d4d8;
-  --color-neutral-400: #a1a1aa;
-  --color-neutral-500: #71717a;
-  --color-neutral-600: #52525b;
-  --color-neutral-700: #3f3f46;
-  --color-neutral-800: #27272a;
-  --color-neutral-900: #18181b;
-  --color-neutral-950: #09090b;
+  /* ── Cozy Walnut Base Config (Claude Spec) ── */
+  --color-neutral-50: #ffffff;
+  --color-neutral-100: #F5E6D0; /* Text primary: Warm cream */
+  --color-neutral-200: #E6CEAA;
+  --color-neutral-300: #D0B793;
+  --color-neutral-400: #B89A7A; /* Text secondary: Warm tan */
+  --color-neutral-500: #B89A7A;
+  --color-neutral-600: #8C7652;
+  --color-neutral-700: #735D3C;
+  --color-neutral-800: #403015;
+  --color-neutral-900: #261B07;
+  --color-neutral-950: #130D02;
 
-  /* ── Semantic ── */
-  --color-dark-main: #0c0c0e;
-  --color-dark-card: #131316;
-  --color-dark-elevated: #1a1a1e;
+  /* ── Semantic Surfaces ── */
+  --color-surface-main: #0D0806; /* Page background */
+  --color-surface-card: #1A1009; /* Surface */
+  --color-surface-elevated: #221408; /* Card/Elevated */
+
+  /* ── Legacy aliases (used by cart, checkout, san-antonio) ── */
+  --color-dark-main: #0D0806;
+  --color-dark-bg: #0D0806;
+  --color-dark-card: #1A1009;
+  --color-dark-elevated: #221408;
 
   /* ── Animations ── */
   --animate-fade-in-up: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -65,8 +76,15 @@
 }
 
 :root {
-  --background: var(--color-dark-main);
+  --background: var(--color-surface-main);
   --foreground: var(--color-neutral-100);
+
+  /* ── Semantic color aliases (used across components) ── */
+  --color-text-primary: var(--color-neutral-100);
+  --color-text-secondary: var(--color-neutral-400);
+  --color-primary: #FF585D;
+  --color-primary-hover: #CC3A3D;
+  --color-border-bright: rgba(255, 88, 93, 0.15); /* Barely-there coral tint */
 }
 
 body {
@@ -83,7 +101,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-dark-main);
+  background: var(--color-surface-main);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -103,9 +121,9 @@ body {
 
 /* Display font gets tighter line-height for dramatic headlines */
 .font-display {
-  font-family: 'Merriweather', serif;
+  font-family: 'Fredoka One', cursive;
   line-height: 1.2;
-  font-weight: 700;
+  font-weight: 400; /* Fredoka One only has weight 400 normally */
 }
 
 /* Body text gets comfortable line-height */

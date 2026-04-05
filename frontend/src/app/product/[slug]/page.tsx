@@ -17,15 +17,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const desc = data.product.description?.replace(/<[^>]*>/g, '').trim().slice(0, 160)
-        || 'Custom hand-painted pet clone made in San Antonio, TX. Upload photos and receive a one-of-a-kind keepsake.';
+        || 'Custom hand-painted pet figurine made in San Antonio, TX. Upload photos and we\'ll handcraft a one-of-a-kind keepsake.';
 
     return {
-        title: `Custom Hand-Painted ${data.product.name}. San Antonio, TX | My Pet Clones`,
+        title: `Custom Hand-Painted ${data.product.name}. San Antonio, TX | Cherished Mementos`,
         description: desc,
         keywords: [
-            'custom pet clone', 'hand-painted pet figurine', 'pet memorial San Antonio',
-            'custom dog clone', 'custom cat clone', 'pet portrait San Antonio TX',
-            'personalized pet gift', 'pet memorial gift',
+            'custom pet figurine', 'hand-painted pet figurine', 'pet memorial San Antonio',
+            'custom dog figurine', 'custom cat figurine', 'pet portrait San Antonio TX',
+            'pet memorial keepsake', 'custom pet memorial',
         ],
     };
 }
@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: PageProps) {
         "image": galleryImages,
         "brand": {
             "@type": "Brand",
-            "name": "My Pet Clones"
+            "name": "Cherished Mementos"
         },
         "offers": {
             "@type": "AggregateOffer",
@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: PageProps) {
             "availability": "https://schema.org/InStock",
             "seller": {
                 "@type": "Organization",
-                "name": "My Pet Clones"
+                "name": "Cherished Mementos"
             }
         },
         "aggregateRating": {
@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: PageProps) {
         },
         "manufacturer": {
             "@type": "Organization",
-            "name": "My Pet Clones",
+            "name": "Cherished Mementos",
             "address": {
                 "@type": "PostalAddress",
                 "addressLocality": "San Antonio",
@@ -103,8 +103,8 @@ export default async function ProductPage({ params }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
             />
-            <div className="max-w-6xl mx-auto px-6 py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+            <div className="max-w-6xl mx-auto px-6 py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
                     {/* ── Left: Image Gallery ── */}
                     <ProductGallery
                         images={galleryImages}
@@ -121,7 +121,7 @@ export default async function ProductPage({ params }: PageProps) {
                         </div>
 
                         {/* Name */}
-                        <h1 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
+                        <h1 className="font-display text-4xl md:text-5xl font-bold text-[var(--color-text-primary)] leading-tight">
                             {product.name}
                         </h1>
 
@@ -132,7 +132,7 @@ export default async function ProductPage({ params }: PageProps) {
 
                         {/* Shipping */}
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-neutral-400">Ships in 5 days</span>
+                            <span className="text-sm text-neutral-400">Ships in 5–7 business days · Rush available</span>
                         </div>
 
                         {/* Divider */}
@@ -146,9 +146,9 @@ export default async function ProductPage({ params }: PageProps) {
                 </div>
 
                 {/* ── FAQ / Risk Reversal ── */}
-                <section className="mt-32 max-w-3xl mx-auto">
+                <section className="mt-14 max-w-3xl mx-auto">
                     <ProductFadeUp>
-                        <h2 className="font-display text-2xl font-bold text-white text-center mb-12">
+                        <h2 className="font-display text-2xl font-bold text-[var(--color-text-primary)] text-center mb-8">
                             Common Questions
                         </h2>
                     </ProductFadeUp>
@@ -172,8 +172,8 @@ export default async function ProductPage({ params }: PageProps) {
                             },
                         ].map((faq, i) => (
                             <ProductFadeUp key={i} delay={i * 0.1}>
-                                <div className="rounded-xl bg-[var(--color-dark-card)] p-8 shadow-md hover:shadow-lg transition-shadow">
-                                    <h3 className="text-base font-semibold text-white mb-2">{faq.q}</h3>
+                                <div className="rounded-2xl bg-[var(--color-surface-card)] p-8 shadow-md hover:shadow-lg transition-shadow">
+                                    <h3 className="text-base font-semibold text-[var(--color-text-primary)] mb-2">{faq.q}</h3>
                                     <p className="text-sm text-neutral-400 leading-relaxed">{faq.a}</p>
                                 </div>
                             </ProductFadeUp>
@@ -182,10 +182,10 @@ export default async function ProductPage({ params }: PageProps) {
                 </section>
 
                 {/* ── Below: How it works ── */}
-                <section className="mt-32 max-w-[1000px] mx-auto rounded-2xl bg-[var(--color-dark-elevated)] py-20 px-6 md:px-16">
+                <section className="mt-32 max-w-[1000px] mx-auto rounded-2xl bg-[var(--color-surface-elevated)] py-20 px-6 md:px-16">
                     <ProductFadeUp>
                         <div className="text-center mb-16 md:mb-20">
-                            <h2 className="font-display text-2xl md:text-3xl font-bold text-white">
+                            <h2 className="font-display text-2xl md:text-3xl font-bold text-[var(--color-text-primary)]">
                                 How It Works
                             </h2>
                         </div>
@@ -202,7 +202,7 @@ export default async function ProductPage({ params }: PageProps) {
                                         <path d="M11 7V5.5A1.5 1.5 0 0112.5 4h7A1.5 1.5 0 0121 5.5V7" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-white mb-2">
+                                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
                                     Upload Your Photos
                                 </h3>
                                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
@@ -221,7 +221,7 @@ export default async function ProductPage({ params }: PageProps) {
                                         <path d="M6 28.5c-1.5-1-2.5-3-2-5 .5 2 2 3.5 4 4-.5.5-1.2.8-2 1z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-white mb-2">
+                                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
                                     We Sculpt &amp; Paint
                                 </h3>
                                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
@@ -241,7 +241,7 @@ export default async function ProductPage({ params }: PageProps) {
                                         <path d="M5 24h22" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold text-white mb-2">
+                                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
                                     Unbox Your Best Friend
                                 </h3>
                                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">

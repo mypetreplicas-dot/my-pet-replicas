@@ -8,7 +8,7 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-[var(--color-dark-main)] shadow-[0_2px_4px_hsla(0,0%,0%,0.2),_0_8px_16px_hsla(0,0%,0%,0.4)]">
+        <header className="fixed top-0 w-full z-50 bg-[var(--color-surface-main)]/96 backdrop-blur-[12px] border-b border-neutral-800 shadow-[0_2px_4px_hsla(0,0%,0%,0.05),_0_8px_16px_hsla(0,0%,0%,0.02)]">
             <div className="max-w-[1200px] mx-auto px-6 h-[88px] flex items-center justify-between">
 
                 {/* Left: Logo (Serif font-display) */}
@@ -17,9 +17,10 @@ export default function Header() {
                     className="flex items-center min-h-[44px] min-w-[44px] z-50"
                     onClick={() => setIsMobileMenuOpen(false)}
                 >
-                    <span className="font-display font-bold text-2xl tracking-tight text-white">
-                        MyPet<span className="text-terra-400">Clones</span>
-                    </span>
+                    <div className="flex flex-col">
+                        <span className="font-display text-[28px] text-[#FF585D] leading-none uppercase">Cherished</span>
+                        <span className="font-sans font-black text-[var(--color-text-primary)] text-[13px] tracking-[0.2em] leading-tight">MEMENTOS</span>
+                    </div>
                 </Link>
 
                 {/* Right: CTA, Cart, Hamburger */}
@@ -27,9 +28,9 @@ export default function Header() {
                     <div className="hidden md:block">
                         <Link
                             href="/product/custom-pet-replica"
-                            className="px-6 py-3 min-h-[44px] bg-terra-600 hover:bg-terra-500 text-white text-[16px] font-semibold rounded-full transition-all shadow-[0_2px_8px_hsla(22,74%,54%,0.25)] flex items-center justify-center"
+                            className="px-6 py-3 min-h-[44px] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-[16px] font-sans font-extrabold rounded-full transition-all shadow-[0_2px_8px_hsla(358,100%,67%,0.25)] flex items-center justify-center"
                         >
-                            Create My Clone
+                            Order yours
                         </Link>
                     </div>
 
@@ -39,7 +40,7 @@ export default function Header() {
 
                     {/* Hamburger Menu Toggle (Mobile Only) */}
                     <button
-                        className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] text-neutral-400 hover:text-white transition-colors"
+                        className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] text-neutral-500 hover:text-neutral-900 transition-colors"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label="Toggle mobile menu"
                     >
@@ -58,13 +59,13 @@ export default function Header() {
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="absolute top-[88px] left-0 w-full h-screen bg-[var(--color-dark-main)] z-40 md:hidden flex flex-col p-6 shadow-inner">
+                <div className="absolute top-[88px] left-0 w-full h-screen bg-[var(--color-surface-main)]/96 backdrop-blur-[12px] z-40 md:hidden flex flex-col p-6 shadow-inner">
                     <Link
                         href="/product/custom-pet-replica"
-                        className="w-full px-6 py-4 min-h-[44px] bg-terra-600 hover:bg-terra-500 text-white text-[18px] font-semibold rounded-full transition-colors flex items-center justify-center shadow-[0_4px_12px_hsla(22,74%,54%,0.3)]"
+                        className="w-full px-6 py-4 min-h-[44px] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-[18px] font-sans font-extrabold rounded-full transition-colors flex items-center justify-center shadow-[0_4px_12px_hsla(358,100%,67%,0.3)]"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
-                        Create My Clone
+                        Commission your figure
                     </Link>
                 </div>
             )}

@@ -24,40 +24,40 @@ export default function HomePage() {
   return (
     <>
       {/* ── Hero Section ── */}
-      <section className="relative min-h-[90vh] flex items-center">
+      <section className="relative min-h-[70vh] flex items-center">
         {/* Background image & Overlay */}
-        <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
+        <div className="absolute inset-0 z-0 bg-[var(--color-surface-elevated)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/replicas/_DSC3783.jpg"
             alt="A hand-painted custom pet clone sitting beside a framed photo"
             className="w-full h-full object-cover opacity-40 grayscale"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark-main)] via-[var(--color-dark-main)]/70 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface-main)] via-[var(--color-surface-main)]/90 to-transparent" />
         </div>
 
         <HomeHero>
           <div className="relative z-10 max-w-6xl mx-auto px-6">
             <div className="max-w-2xl space-y-8">
-              <p className="text-xs font-bold uppercase tracking-[0.25em] text-terra-400 drop-shadow-md">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--color-gold)] drop-shadow-md">
                 Hand-Painted in San Antonio, TX
               </p>
 
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-[1.1] drop-shadow-lg">
-                Immortalize Your{' '}
-                <span className="text-gradient-terra drop-shadow-lg">Best Friend</span>
+              <h1 className="font-display text-5xl md:text-7xl font-bold text-[var(--color-text-primary)] leading-[1.1] drop-shadow-sm">
+                Your Pet{' '}
+                <span className="text-[var(--color-primary)] drop-shadow-lg">Miniaturized.</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-neutral-200 leading-relaxed max-w-lg drop-shadow-md">
-                A hand painted clone that captures your pet's markings and expressions. This is the best gift for dog and cat owners.
+              <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed max-w-lg drop-shadow-md">
+                A hand-painted figurine that captures your pet's every marking, color, and expression. Starting at $150 — delivered in 5–7 business days, or as fast as 3 days with rush.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-8">
                 <Link
                   href="/product/custom-pet-replica"
-                  className="px-8 py-5 min-h-[56px] bg-terra-600 hover:bg-terra-500 text-white text-[18px] font-bold rounded-full transition-all shadow-[0_4px_16px_hsla(22,74%,54%,0.4)] hover:shadow-[0_8px_24px_hsla(22,74%,54%,0.6)] hover:-translate-y-1 flex items-center justify-center duration-300"
+                  className="px-8 py-5 min-h-[56px] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-[18px] font-sans font-extrabold rounded-full transition-all shadow-[0_4px_16px_hsla(358,100%,67%,0.4)] hover:shadow-[0_8px_24px_hsla(358,100%,67%,0.6)] hover:-translate-y-1 flex items-center justify-center duration-300"
                 >
-                  Create My Pet Clone →
+                  Order yours
                 </Link>
               </div>
             </div>
@@ -67,11 +67,11 @@ export default function HomePage() {
 
       {/* ── My Work Gallery ── */}
       {workImages.length > 0 && (
-        <section className="py-28 md:py-40 px-6">
+        <section className="py-16 md:py-20 px-6">
           <div className="max-w-[1200px] mx-auto">
             <HomeFadeUp>
-              <div className="text-center mb-16 md:mb-20">
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+              <div className="text-center mb-10 md:mb-12">
+                <h2 className="font-display text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
                   My Work
                 </h2>
                 <p className="text-sm text-neutral-400 max-w-lg mx-auto">
@@ -83,7 +83,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {workImages.map((src, i) => (
                 <HomeFadeUp key={i} delay={i * 0.1}>
-                  <ExpandableImage src={src} alt={`Pet clone ${i + 1}`} />
+                  <ExpandableImage src={src} alt={`Pet figurine ${i + 1}`} />
                 </HomeFadeUp>
               ))}
             </div>
@@ -92,12 +92,12 @@ export default function HomePage() {
       )}
 
       {/* ── Social Proof: Craftsman Image Gallery ── */}
-      <section className="py-24 md:py-32 px-6">
+      <section className="py-16 md:py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <HomeFadeUp>
-            <div className="text-center mb-16">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-6">
-                Trusted by Hundreds of Collectors.<br />Now Immortalizing Your Best Friend.
+            <div className="text-center mb-10">
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-6">
+                Trusted by Hundreds of Happy Customers.<br />Each Figurine as Unique as the Pet It&apos;s Based On.
               </h2>
               <a
                 href="https://www.etsy.com/shop/PRNTMAKYR"
@@ -147,11 +147,11 @@ export default function HomePage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className="py-28 md:py-40 px-6 bg-[var(--color-dark-elevated)]">
+      <section id="how-it-works" className="py-14 md:py-20 px-6 bg-[var(--color-surface-elevated)]">
         <div className="max-w-[1000px] mx-auto">
           <HomeFadeUp>
-            <div className="text-center mb-20 md:mb-24">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
+            <div className="text-center mb-10 md:mb-14">
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-[var(--color-text-primary)]">
                 How It Works
               </h2>
             </div>
@@ -169,11 +169,11 @@ export default function HomePage() {
                     <path d="M11 7V5.5A1.5 1.5 0 0112.5 4h7A1.5 1.5 0 0121 5.5V7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
                   Upload Your Photos
                 </h3>
                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                  Submit at least 3 pictures of your pet to the uploader on the product page.
+                  Submit at least 3 clear photos of your pet — different angles help us get every detail right.
                 </p>
               </div>
             </HomeFadeUp>
@@ -188,11 +188,11 @@ export default function HomePage() {
                     <path d="M6 28.5c-1.5-1-2.5-3-2-5 .5 2 2 3.5 4 4-.5.5-1.2.8-2 1z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  We 3D Sculpt &amp; Paint
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
+                  We Sculpt, Refine &amp; Hand-Paint
                 </h3>
                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                  I make the 3D model and my dad hand-paints every marking, color and expression that made your pet special.
+                  We study your photos carefully and handcraft a full-color figurine that captures your pet&apos;s exact markings, colors, and expression — every detail, exactly as they are.
                 </p>
               </div>
             </HomeFadeUp>
@@ -208,11 +208,11 @@ export default function HomePage() {
                     <path d="M5 24h22" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
                   Unbox Your Best Friend
                 </h3>
                 <p className="text-sm text-neutral-400 leading-relaxed max-w-[300px] md:mx-auto">
-                  Your clone arrives ready as a memorial or just a good gift for someone who loves their pet.
+                  Your figurine arrives carefully packaged and ready to display — a permanent reminder of the pet you love or the one you still miss.
                 </p>
               </div>
             </HomeFadeUp>
@@ -220,12 +220,12 @@ export default function HomePage() {
 
           {/* Secondary CTA */}
           <HomeFadeUp delay={0.45}>
-            <div className="text-center mt-20 md:mt-24">
+            <div className="text-center mt-10 md:mt-14">
               <Link
                 href="/product/custom-pet-replica"
-                className="inline-flex items-center px-8 py-4 min-h-[52px] border-2 border-terra-500/40 text-terra-400 hover:bg-terra-600/10 hover:border-terra-500/60 font-semibold rounded-full transition-all duration-300"
+                className="inline-flex items-center px-8 py-4 min-h-[52px] border-2 border-[var(--color-border-bright)] text-[var(--color-text-primary)] hover:bg-[var(--color-primary)]/10 hover:border-[var(--color-primary)]/40 font-sans font-extrabold rounded-full transition-all duration-300"
               >
-                Start Your Commission
+                Commission your figure
               </Link>
             </div>
           </HomeFadeUp>

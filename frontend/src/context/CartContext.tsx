@@ -92,7 +92,16 @@ export async function vendureMutation<T>(query: string, variables?: Record<strin
     }
   }
 
-  const json = await res.json();
+  const text = await res.text();
+  if (!text) {
+    throw new Error(`Vendure API returned an empty response (HTTP ${res.status})`);
+  }
+  let json: any;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error(`Vendure API returned non-JSON (HTTP ${res.status}): ${text.slice(0, 200)}`);
+  }
   if (json.errors) {
     console.error('Vendure cart error:', json.errors);
     throw new Error(json.errors[0]?.message || 'Cart operation failed');
