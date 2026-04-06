@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useImagePreview } from '@/lib/imageUtils';
 
 interface OrderLine {
